@@ -1,6 +1,6 @@
 "use client";
 
-import AuthLayout from "@/Component/AuthLayout";
+import AuthLayout from "@/Components/AuthLayout";
 import { authClient } from "@/lib/auth-client";
 import {
   ArrowRight,

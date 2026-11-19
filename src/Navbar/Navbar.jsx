@@ -10,6 +10,7 @@ import {
   UserRound,
   X,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -148,9 +149,19 @@ export default function Navbar() {
                 onClick={() => setProfileOpen(!profileOpen)}
                 className="flex items-center gap-2 rounded-full border border-rose-100 px-3 py-2 transition hover:bg-rose-50"
               >
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-rose-100 text-rose-600">
-                  <UserRound size={19} />
-                </div>
+                {currentUser.image ? (
+                  <Image
+                    src={currentUser.image}
+                    alt={currentUser.name || "User"}
+                    width={100}
+                    height={100}
+                    className="h-9 w-9 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-rose-100 text-rose-600">
+                    <UserRound size={19} />
+                  </div>
+                )}
 
                 <div className="text-left">
                   <p className="text-sm font-semibold text-gray-800">
@@ -215,9 +226,19 @@ export default function Navbar() {
           {/* Mobile User Information */}
           {currentUser && (
             <div className="mb-3 flex items-center gap-3 rounded-xl bg-rose-50 p-4">
-              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-rose-600">
-                <UserRound size={21} />
-              </div>
+              {currentUser.image ? (
+                <Image
+                  src={currentUser.image}
+                  alt={currentUser.name || "User"}
+                  width={100}
+                  height={100}
+                  className="h-9 w-9 rounded-full object-cover"
+                />
+              ) : (
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-rose-100 text-rose-600">
+                  <UserRound size={19} />
+                </div>
+              )}
 
               <div>
                 <p className="font-semibold text-gray-800">

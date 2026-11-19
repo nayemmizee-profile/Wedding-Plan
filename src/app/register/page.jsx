@@ -17,7 +17,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import AuthLayout from "@/Component/AuthLayout";
+import AuthLayout from "@/Components/AuthLayout";
 import { authClient } from "@/lib/auth-client";
 
 export default function RegisterPage() {
