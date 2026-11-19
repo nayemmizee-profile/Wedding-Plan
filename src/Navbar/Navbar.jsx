@@ -29,7 +29,7 @@ const userLinks = [
   { name: "Home", href: "/" },
   { name: "Find Vendors", href: "/vendors" },
   { name: "My Bookings", href: "/my-bookings" },
-  { name: "Favorites", href: "/favorites" },
+  { name: "Dashboard", href: "/user/dashboard" },
 ];
 
 // Vendor Navigation

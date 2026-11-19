@@ -57,7 +57,7 @@ export default function UserSidebar({ user, sidebarOpen, setSidebarOpen }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setSidebarOpen(false)}
-            className="fixed inset-0 z-40 bg-black/40 lg:hidden"
+            className="fixed inset-y-0 z-50 bg-black/40 lg:hidden"
           />
         )}
       </AnimatePresence>
@@ -69,7 +69,7 @@ export default function UserSidebar({ user, sidebarOpen, setSidebarOpen }) {
           x: sidebarOpen ? 0 : undefined,
         }}
         className={`
-          fixed inset-y-0 left-0 z-50 flex w-72 flex-col
+          fixed inset-y-0 z-50 left-0  flex w-72 flex-col
           border-r border-rose-100 bg-white
           transition-transform duration-300
           lg:sticky lg:top-0 lg:h-screen lg:translate-x-0
