@@ -34,10 +34,11 @@ const userLinks = [
 
 // Vendor Navigation
 const vendorLinks = [
+  { name: "Home", href: "/" },
   { name: "Dashboard", href: "/vendor/dashboard" },
-  { name: "My Services", href: "/vendor/services" },
-  { name: "Booking Requests", href: "/vendor/bookings" },
-  { name: "Reviews", href: "/vendor/reviews" },
+  { name: "My Services", href: "/vendor/dashboard/services" },
+  { name: "Booking Requests", href: "/vendor/dashboard/bookings" },
+  { name: "Reviews", href: "/vendor/dashboard/reviews" },
 ];
 
 export default function Navbar() {
