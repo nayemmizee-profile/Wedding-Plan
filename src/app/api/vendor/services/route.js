@@ -65,3 +65,64 @@ export async function POST(request) {
     );
   }
 }
+//**Get method ============================================> */
+
+export async function GET() {
+  try {
+    // 1. Verify Better Auth session
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Please login first",
+        },
+        { status: 401 },
+      );
+    }
+
+    // 2. Verify vendor role
+    if (session.user.role !== "vendor") {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Only vendors can access their services",
+        },
+        { status: 403 },
+      );
+    }
+
+    // 3. Fetch services from Express backend
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/vendor/services`,
+      {
+        method: "GET",
+        headers: {
+          "x-internal-secret": process.env.INTERNAL_API_SECRET,
+          "x-user-id": session.user.id,
+          "x-user-email": session.user.email,
+        },
+        cache: "no-store",
+      },
+    );
+
+    const data = await response.json();
+
+    return NextResponse.json(data, {
+      status: response.status,
+    });
+  } catch (error) {
+    console.error("GET VENDOR SERVICES ERROR:", error);
+
+    return NextResponse.json(
+      {
+        success: false,
+        message: error.message || "Failed to load services",
+      },
+      { status: 500 },
+    );
+  }
+}

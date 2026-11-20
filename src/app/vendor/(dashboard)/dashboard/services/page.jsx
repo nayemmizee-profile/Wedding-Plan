@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { CheckCircle2, Clock, MapPin, Plus, XCircle } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -73,150 +74,136 @@ export default function VendorServicesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f7f8fc] p-4 md:p-8">
-      <div className="mx-auto max-w-7xl">
-        <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-[#263b42]">My Services</h1>
-            <p className="mt-2 text-gray-500">
-              Manage your services and track admin approval.
-            </p>
-          </div>
-
-          <Link
-            href="/vendor/dashboard/services/add"
-            className="flex items-center gap-2 rounded-xl bg-[#263b42] px-5 py-3 font-semibold text-white hover:bg-[#38545d]"
-          >
-            <Plus size={19} />
-            Add Service
-          </Link>
+    <div className="space-y-8 p-6">
+      {/* Header */}
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-800">My Services</h1>
+          <p className="mt-1 text-sm text-gray-500">
+            Manage all your submitted services.
+          </p>
         </div>
 
-        {/* Statistics */}
-
-        <div className="mb-8 grid gap-4 sm:grid-cols-3">
-          {[
-            {
-              title: "Total Services",
-              count: services.length,
-            },
-            {
-              title: "Pending",
-              count: pending,
-            },
-            {
-              title: "Approved",
-              count: approved,
-            },
-            {
-              title: "Rejected",
-              count: rejected,
-            },
-          ].map((item) => (
-            <div
-              key={item.title}
-              className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm"
-            >
-              <p className="text-sm text-gray-500">{item.title}</p>
-
-              <h2 className="mt-2 text-3xl font-bold text-[#263b42]">
-                {item.count}
-              </h2>
-            </div>
-          ))}
-        </div>
-
-        {/* Service List */}
-
-        {error ? (
-          <div className="rounded-xl bg-red-50 p-5 text-red-600">{error}</div>
-        ) : services.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-gray-300 bg-white p-16 text-center">
-            <h2 className="text-xl font-bold text-gray-700">No services yet</h2>
-            <p className="mt-2 text-gray-500">
-              Add your first service to get started.
-            </p>
-          </div>
-        ) : (
-          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {services.map((service, index) => {
-              const status = statusStyle[service.status] || statusStyle.pending;
-
-              const StatusIcon = status.icon;
-
-              return (
-                <motion.div
-                  key={service._id}
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm"
-                >
-                  <img
-                    src={service.images?.[0]}
-                    alt={service.serviceName}
-                    className="h-52 w-full object-cover"
-                  />
-
-                  <div className="p-5">
-                    <div className="mb-3 flex items-start justify-between gap-2">
-                      <span className="rounded-full bg-gray-100 px-3 py-1 text-xs text-gray-600">
-                        {service.category}
-                      </span>
-
-                      <span
-                        className={`flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold ${status.color}`}
-                      >
-                        <StatusIcon size={14} />
-                        {status.label}
-                      </span>
-                    </div>
-
-                    <h2 className="text-xl font-bold text-[#263b42]">
-                      {service.serviceName}
-                    </h2>
-
-                    <p className="mt-2 line-clamp-2 text-sm text-gray-500">
-                      {service.description}
-                    </p>
-
-                    <div className="mt-4 flex items-center justify-between">
-                      <p className="text-lg font-bold text-[#b47b57]">
-                        ৳{service.price.toLocaleString("en-BD")}
-                      </p>
-
-                      <p className="flex items-center gap-1 text-sm text-gray-500">
-                        <MapPin size={15} />
-                        {service.location}
-                      </p>
-                    </div>
-
-                    <div className="mt-4 border-t border-gray-100 pt-4">
-                      {service.status === "pending" && (
-                        <p className="text-sm text-amber-700">
-                          Your service is waiting for admin review.
-                        </p>
-                      )}
-
-                      {service.status === "approved" && (
-                        <p className="text-sm text-green-700">
-                          Your service is approved and visible to customers.
-                        </p>
-                      )}
-
-                      {service.status === "rejected" && (
-                        <p className="text-sm text-red-700">
-                          Your service was rejected by admin.
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-        )}
+        <Link
+          href="/vendor/add-service"
+          className="flex items-center justify-center gap-2 rounded-xl bg-teal-600 px-5 py-3 text-white transition hover:bg-teal-700"
+        >
+          <Plus size={18} />
+          Add New Service
+        </Link>
       </div>
+
+      {/* Statistics */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {[
+          { label: "Total Services", value: services.length },
+          { label: "Pending", value: pending },
+          { label: "Approved", value: approved },
+          { label: "Rejected", value: rejected },
+        ].map((item) => (
+          <div
+            key={item.label}
+            className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm"
+          >
+            <p className="text-sm text-gray-500">{item.label}</p>
+            <h2 className="mt-2 text-3xl font-bold text-gray-800">
+              {item.value}
+            </h2>
+          </div>
+        ))}
+      </div>
+
+      {/* Error */}
+      {error && (
+        <div className="rounded-xl bg-red-50 p-4 text-red-600">{error}</div>
+      )}
+
+      {/* Services */}
+      {services.length === 0 ? (
+        <div className="rounded-2xl border border-dashed border-gray-300 bg-white p-12 text-center">
+          <h2 className="text-lg font-semibold text-gray-700">
+            No Services Found
+          </h2>
+          <p className="mt-2 text-sm text-gray-500">
+            You haven't submitted any services yet.
+          </p>
+        </div>
+      ) : (
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {services.map((service) => {
+            const status = statusStyle[service.status] || statusStyle.pending;
+
+            const StatusIcon = status.icon;
+
+            return (
+              <motion.div
+                key={service._id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+              >
+                {/* Image */}
+                <div className="h-48 bg-gray-100">
+                  {service.images?.[0] && (
+                    <Image
+                      src={service.images[0]}
+                      alt={service.serviceName}
+                      height={100}
+                      width={100}
+                      className="h-full w-full object-cover"
+                    />
+                  )}
+                </div>
+
+                <div className="space-y-4 p-5">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <h2 className="text-lg font-bold text-gray-800">
+                        {service.serviceName}
+                      </h2>
+                      <p className="mt-1 text-sm text-gray-500">
+                        {service.category}
+                      </p>
+                    </div>
+
+                    <span
+                      className={`flex shrink-0 items-center gap-1 rounded-full px-3 py-1 text-xs font-medium ${status.color}`}
+                    >
+                      <StatusIcon size={14} />
+                      {status.label}
+                    </span>
+                  </div>
+
+                  <p className="line-clamp-2 text-sm text-gray-500">
+                    {service.description}
+                  </p>
+
+                  <div className="flex items-center gap-2 text-sm text-gray-500">
+                    <MapPin size={16} />
+                    {service.location}
+                  </div>
+
+                  <div className="flex items-center justify-between border-t border-gray-100 pt-4">
+                    <div>
+                      <p className="text-xs text-gray-400">Service Price</p>
+                      <p className="text-lg font-bold text-teal-600">
+                        ৳{Number(service.price).toLocaleString("en-BD")}
+                      </p>
+                    </div>
+
+                    <Link
+                      href={`/vendor/my-services/${service._id}`}
+                      className="rounded-lg bg-teal-50 px-4 py-2 text-sm font-semibold text-teal-700 transition hover:bg-teal-100"
+                    >
+                      View Details
+                    </Link>
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
