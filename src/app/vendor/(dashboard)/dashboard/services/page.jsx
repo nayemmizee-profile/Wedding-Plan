@@ -32,7 +32,7 @@ export default function VendorServicesPage() {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await fetch("/api/vendor/services", {
+        const response = await fetch(`/api/vendor/services`, {
           cache: "no-store",
         });
 
@@ -118,7 +118,7 @@ export default function VendorServicesPage() {
         <div className="rounded-xl bg-red-50 p-4 text-red-600">{error}</div>
       )}
 
-      {/* Services */}
+      {/* Services List */}
       {services.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-gray-300 bg-white p-12 text-center">
           <h2 className="text-lg font-semibold text-gray-700">
@@ -156,6 +156,7 @@ export default function VendorServicesPage() {
                 </div>
 
                 <div className="space-y-4 p-5">
+                  {/* Title and Admin Status */}
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <h2 className="text-lg font-bold text-gray-800">
@@ -174,15 +175,30 @@ export default function VendorServicesPage() {
                     </span>
                   </div>
 
+                  {/* Description */}
                   <p className="line-clamp-2 text-sm text-gray-500">
                     {service.description}
                   </p>
 
+                  {/* Location */}
                   <div className="flex items-center gap-2 text-sm text-gray-500">
                     <MapPin size={16} />
                     {service.location}
                   </div>
 
+                  {/* Admin Feedback */}
+                  {service.status === "rejected" && service.rejectionReason && (
+                    <div className="rounded-xl bg-red-50 p-3">
+                      <p className="text-xs font-semibold text-red-700">
+                        Admin Feedback
+                      </p>
+                      <p className="mt-1 text-sm text-red-600">
+                        {service.rejectionReason}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Price and Details */}
                   <div className="flex items-center justify-between border-t border-gray-100 pt-4">
                     <div>
                       <p className="text-xs text-gray-400">Service Price</p>
@@ -191,10 +207,7 @@ export default function VendorServicesPage() {
                       </p>
                     </div>
 
-                    <Link
-                      href={`/vendor/my-services/${service._id}`}
-                      className="rounded-lg bg-teal-50 px-4 py-2 text-sm font-semibold text-teal-700 transition hover:bg-teal-100"
-                    >
+                    <Link href={`/vendor/my-services/${service._id}`}>
                       View Details
                     </Link>
                   </div>
