@@ -62,7 +62,7 @@ export default function ServiceCard({
           </p>
 
           <p className="font-bold text-[#A94F70]">
-            ৳{Number(service.price).toLocaleString("en-BD")}
+            ${Number(service.price).toLocaleString("en-US")}
           </p>
         </div>
 

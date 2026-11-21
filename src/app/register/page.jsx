@@ -93,10 +93,9 @@ export default function RegisterPage() {
         email: form.email.trim(),
         password: form.password,
         image: form.image.trim() || undefined,
-        role,
+        accountType: role,
         callbackURL: "/login",
       });
-
       if (authError) {
         setError(authError.message || "Registration failed. Please try again.");
         return;

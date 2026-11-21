@@ -20,7 +20,7 @@ export async function vendorRequest(path, options = {}) {
     }
 
     // 2. Verify Vendor Role
-    if (session.user.role !== "vendor") {
+    if (session.user.accountType !== "vendor") {
       return NextResponse.json(
         {
           success: false,

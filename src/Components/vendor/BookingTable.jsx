@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { CalendarDays, Check, Clock, Mail, MapPin, X } from "lucide-react";
+import Image from "next/image";
 
 export default function BookingTable({ bookings, onAction, processingId }) {
   if (!bookings.length) {
@@ -30,9 +31,11 @@ export default function BookingTable({ bookings, onAction, processingId }) {
         >
           <div className="flex flex-col justify-between gap-4 md:flex-row">
             <div className="flex gap-4">
-              <img
+              <Image
                 src={booking.serviceImage || "/placeholder.png"}
                 alt={booking.serviceName}
+                height={100}
+                width={100}
                 className="h-20 w-20 rounded-xl object-cover"
               />
 

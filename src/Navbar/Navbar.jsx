@@ -13,7 +13,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 // Guest Navigation
 const guestLinks = [
@@ -41,26 +41,92 @@ const vendorLinks = [
   { name: "Reviews", href: "/vendor/dashboard/reviews" },
 ];
 
+// Admin Navigation
+const adminLinks = [
+  { name: "Home", href: "/" },
+  { name: "Dashboard", href: "/admin" },
+  { name: "Services", href: "/admin/services" },
+  { name: "Transactions", href: "/admin/transactions" },
+  { name: "Users", href: "/admin/users" },
+];
+
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
 
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [adminCheckPending, setAdminCheckPending] = useState(true);
+
   const { data: session, isPending } = authClient.useSession();
 
   const currentUser = session?.user;
-  const role = currentUser?.role?.toLowerCase();
 
   const pathname = usePathname();
   const router = useRouter();
 
-  // Select navigation based on role
-  const navLinks =
-    role === "vendor" ? vendorLinks : role === "user" ? userLinks : guestLinks;
+  const accountType = currentUser?.accountType?.toLowerCase();
 
-  // Check active route
+  // Verify Admin
+  useEffect(() => {
+    let isMounted = true;
+
+    const checkAdmin = async () => {
+      if (!currentUser?.id) {
+        setIsAdmin(false);
+        setAdminCheckPending(false);
+        return;
+      }
+
+      setAdminCheckPending(true);
+
+      try {
+        const response = await fetch("/api/auth/check-admin", {
+          method: "GET",
+          cache: "no-store",
+        });
+
+        const result = await response.json();
+
+        if (isMounted) {
+          setIsAdmin(response.ok && result.success && result.isAdmin);
+        }
+      } catch (error) {
+        console.error("Admin verification failed:", error);
+
+        if (isMounted) {
+          setIsAdmin(false);
+        }
+      } finally {
+        if (isMounted) {
+          setAdminCheckPending(false);
+        }
+      }
+    };
+
+    checkAdmin();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [currentUser?.id]);
+
+  // Select Navigation
+  const navLinks = !currentUser
+    ? guestLinks
+    : adminCheckPending
+      ? []
+      : isAdmin
+        ? adminLinks
+        : accountType === "vendor"
+          ? vendorLinks
+          : accountType === "user"
+            ? userLinks
+            : guestLinks;
+
+  // Check Active Route
   const isActive = (href) => pathname === href;
 
-  // Handle logout
+  // Handle Logout
   const handleLogout = async () => {
     try {
       setIsOpen(false);
@@ -75,16 +141,18 @@ export default function Navbar() {
     }
   };
 
-  // Close mobile menu
+  // Close Mobile Menu
   const closeMenu = () => {
     setIsOpen(false);
   };
 
-  if (isPending) {
+  if (isPending || (currentUser && adminCheckPending)) {
     return (
       <header className="sticky top-0 z-50 h-[73px] border-b border-rose-100 bg-white/95" />
     );
   }
+
+  // তোমার আগের সম্পূর্ণ return অংশ এখানে থাকবে
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-rose-100 bg-white/95 shadow-sm backdrop-blur-md">
@@ -168,7 +236,9 @@ export default function Navbar() {
                   <p className="text-sm font-semibold text-gray-800">
                     {currentUser.name || "My Account"}
                   </p>
-                  <p className="text-xs capitalize text-gray-500">{role}</p>
+                  <p className="text-xs capitalize text-gray-500">
+                    {accountType}
+                  </p>
                 </div>
 
                 <ChevronDown
@@ -183,7 +253,11 @@ export default function Navbar() {
               {profileOpen && (
                 <div className="absolute right-0 top-14 w-52 rounded-xl border border-gray-100 bg-white p-2 shadow-xl">
                   <Link
-                    href={role === "vendor" ? "/vendor/dashboard" : "/profile"}
+                    href={
+                      accountType === "vendor"
+                        ? "/vendor/dashboard"
+                        : "/profile"
+                    }
                     onClick={() => setProfileOpen(false)}
                     className="flex items-center gap-3 rounded-lg px-3 py-3 text-sm text-gray-700 transition hover:bg-rose-50 hover:text-rose-600"
                   >
@@ -245,7 +319,9 @@ export default function Navbar() {
                 <p className="font-semibold text-gray-800">
                   {currentUser.name || "My Account"}
                 </p>
-                <p className="text-xs capitalize text-rose-600">{role}</p>
+                <p className="text-xs capitalize text-rose-600">
+                  {accountType}
+                </p>
               </div>
             </div>
           )}

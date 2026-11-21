@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { ImagePlus, Loader2, X } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -201,9 +202,11 @@ export default function ServiceForm() {
         <label className="flex min-h-48 cursor-pointer flex-col items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 transition hover:border-[#A94F70]">
           {preview ? (
             <div className="relative h-48 w-full">
-              <img
+              <Image
                 src={preview}
                 alt="Service preview"
+                height={100}
+                width={100}
                 className="h-full w-full object-cover"
               />
               <button

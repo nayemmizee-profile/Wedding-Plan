@@ -1,3 +1,4 @@
+"use client";
 import { CalendarHeart, Camera, Heart, Sparkles } from "lucide-react";
 import Link from "next/link";
 

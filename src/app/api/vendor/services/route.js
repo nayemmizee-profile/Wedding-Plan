@@ -69,22 +69,22 @@ export async function POST(request) {
 
 export async function GET() {
   try {
-    // 1. Verify Better Auth session
     const session = await auth.api.getSession({
       headers: await headers(),
     });
 
+    console.log("Session User:", session?.user);
+
     if (!session?.user) {
       return NextResponse.json(
-        {
-          success: false,
-          message: "Please login first",
-        },
+        { success: false, message: "Please login first" },
         { status: 401 },
       );
     }
 
-    // 2. Verify vendor role
+    console.log("User ID:", session.user.id);
+    console.log("User Role:", session.user.role);
+
     if (session.user.role !== "vendor") {
       return NextResponse.json(
         {
@@ -95,7 +95,8 @@ export async function GET() {
       );
     }
 
-    // 3. Fetch services from Express backend
+    console.log("Backend URL:", process.env.NEXT_PUBLIC_API_URL);
+
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/vendor/services`,
       {
@@ -109,7 +110,20 @@ export async function GET() {
       },
     );
 
-    const data = await response.json();
+    const responseText = await response.text();
+
+    console.log("Express Status:", response.status);
+    console.log("Express Response:", responseText);
+
+    let data;
+
+    try {
+      data = JSON.parse(responseText);
+    } catch {
+      throw new Error(
+        `Express returned invalid JSON. Status: ${response.status}`,
+      );
+    }
 
     return NextResponse.json(data, {
       status: response.status,

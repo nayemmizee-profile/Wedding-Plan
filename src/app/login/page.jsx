@@ -37,18 +37,18 @@ export default function LoginPage() {
     }));
   };
 
-  const redirectByRole = (role) => {
-    if (role === "vendor") {
+  const redirectByRole = (accountType) => {
+    if (accountType === "vendor") {
       router.replace("/vendor/dashboard");
       return;
     }
 
-    if (role === "user") {
+    if (accountType === "user") {
       router.replace("/user/dashboard");
       return;
     }
 
-    setError("Your account does not have a valid role.");
+    setError("Your account does not have a valid account type.");
   };
 
   const handleSubmit = async (e) => {
@@ -58,6 +58,7 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
+      // 1. Login
       const { error: authError } = await authClient.signIn.email({
         email: form.email.trim(),
         password: form.password,
@@ -68,6 +69,7 @@ export default function LoginPage() {
         return;
       }
 
+      // 2. Get session
       const { data: sessionData, error: sessionError } =
         await authClient.getSession();
 
@@ -76,9 +78,31 @@ export default function LoginPage() {
         return;
       }
 
-      console.log("Login successful:", sessionData.user);
+      const user = sessionData.user;
 
-      redirectByRole(sessionData.user.role);
+      console.log("Login successful:", user);
+
+      // 3. Check Admin from server
+      const adminResponse = await fetch("/api/auth/check-admin", {
+        method: "GET",
+        cache: "no-store",
+      });
+
+      const adminData = await adminResponse.json();
+
+      if (!adminResponse.ok || !adminData.success) {
+        setError("Unable to verify your account permissions.");
+        return;
+      }
+
+      // 4. Admin has priority
+      if (adminData.isAdmin) {
+        router.replace("/admin");
+        return;
+      }
+
+      // 5. Vendor or User
+      redirectByRole(user.accountType);
     } catch (err) {
       console.error("Login error:", err);
       setError("Something went wrong. Please try again.");

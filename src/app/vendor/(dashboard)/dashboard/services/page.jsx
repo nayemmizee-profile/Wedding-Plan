@@ -85,7 +85,7 @@ export default function VendorServicesPage() {
         </div>
 
         <Link
-          href="/vendor/add-service"
+          href="/vendor/dashboard/services/add"
           className="flex items-center justify-center gap-2 rounded-xl bg-teal-600 px-5 py-3 text-white transition hover:bg-teal-700"
         >
           <Plus size={18} />
@@ -203,13 +203,9 @@ export default function VendorServicesPage() {
                     <div>
                       <p className="text-xs text-gray-400">Service Price</p>
                       <p className="text-lg font-bold text-teal-600">
-                        ৳{Number(service.price).toLocaleString("en-BD")}
+                        ${Number(service.price)}
                       </p>
                     </div>
-
-                    <Link href={`/vendor/my-services/${service._id}`}>
-                      View Details
-                    </Link>
                   </div>
                 </div>
               </motion.div>
