@@ -3,6 +3,30 @@
 import { Check, RefreshCw, Search, Trash2, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
+const parseResponse = async (response) => {
+  const text = await response.text();
+
+  if (!text) {
+    throw new Error(`Empty response. HTTP Status: ${response.status}`);
+  }
+
+  let result;
+
+  try {
+    result = JSON.parse(text);
+  } catch {
+    throw new Error(
+      `Invalid JSON. HTTP Status: ${response.status}. Response: ${text.slice(0, 200)}`,
+    );
+  }
+
+  if (!response.ok || !result.success) {
+    throw new Error(result.message || "Request failed");
+  }
+
+  return result;
+};
+
 export default function ManageServicesPage() {
   const [services, setServices] = useState([]);
   const [search, setSearch] = useState("");
@@ -24,7 +48,8 @@ export default function ManageServicesPage() {
         cache: "no-store",
       });
 
-      const result = await response.json();
+      const result = await parseResponse(response);
+      setServices(result.data || []);
 
       if (!response.ok || !result.success) {
         throw new Error(result.message || "Failed to fetch services");
@@ -53,7 +78,7 @@ export default function ManageServicesPage() {
         body: JSON.stringify(body),
       });
 
-      const result = await response.json();
+      const result = await parseResponse(response);
 
       if (!response.ok || !result.success) {
         throw new Error(result.message || "Update failed");
@@ -76,7 +101,7 @@ export default function ManageServicesPage() {
         method: "DELETE",
       });
 
-      const result = await response.json();
+      const result = await parseResponse(response);
 
       if (!response.ok || !result.success) {
         throw new Error(result.message || "Delete failed");
