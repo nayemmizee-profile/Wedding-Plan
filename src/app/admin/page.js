@@ -24,8 +24,12 @@ export default function AdminDashboard() {
         throw new Error(result.message || "Failed to load dashboard");
       }
 
-      setStats(result.data);
+      console.log("Admin Overview Response:", result);
+
+      // Backend থেকে overview Object গ্রহণ
+      setStats(result.overview);
     } catch (err) {
+      console.error("Overview Fetch Error:", err);
       setError(err.message);
     } finally {
       setLoading(false);

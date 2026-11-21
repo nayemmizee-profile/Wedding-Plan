@@ -82,7 +82,7 @@ export default function ManageServicesPage() {
         throw new Error(result.message || "Delete failed");
       }
 
-      fetchServices();
+      await fetchServices();
       alert("Service deleted successfully");
     } catch (err) {
       alert(err.message);

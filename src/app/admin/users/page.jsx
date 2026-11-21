@@ -16,6 +16,34 @@ export default function ManageUsersPage() {
   const [total, setTotal] = useState(0);
   const [error, setError] = useState("");
 
+  const parseResponse = async (response) => {
+    const text = await response.text();
+
+    if (!text) {
+      throw new Error(
+        `Server returned empty response. HTTP Status: ${response.status}`,
+      );
+    }
+
+    let result;
+
+    try {
+      result = JSON.parse(text);
+    } catch {
+      console.error("Invalid API Response:", text);
+
+      throw new Error(
+        `Server returned invalid JSON. HTTP Status: ${response.status}`,
+      );
+    }
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.message || `Request failed: ${response.status}`);
+    }
+
+    return result;
+  };
+
   const fetchUsers = async () => {
     try {
       setLoading(true);
@@ -29,19 +57,22 @@ export default function ManageUsersPage() {
       });
 
       const response = await fetch(`/api/admin/users?${params.toString()}`, {
+        method: "GET",
         cache: "no-store",
       });
 
-      const result = await response.json();
+      console.log("Users API Status:", response.status);
 
-      if (!response.ok || !result.success) {
-        throw new Error(result.message || "Unable to load users");
-      }
+      const result = await parseResponse(response);
 
-      setUsers(result.data.users);
-      setTotal(result.data.total);
+      console.log("Users API Data:", result);
+
+      setUsers(result.data.users || []);
+      setTotal(result.data.total || 0);
     } catch (err) {
+      console.error("Fetch Users Error:", err);
       setError(err.message);
+      setUsers([]);
     } finally {
       setLoading(false);
     }
@@ -71,15 +102,13 @@ export default function ManageUsersPage() {
         method: "PATCH",
       });
 
-      const result = await response.json();
+      const result = await parseResponse(response);
 
-      if (!response.ok || !result.success) {
-        throw new Error(result.message || "Action failed");
-      }
+      alert(result.message || "Action completed successfully");
 
-      fetchUsers();
-      alert(result.message);
+      await fetchUsers();
     } catch (err) {
+      console.error("Block User Error:", err);
       alert(err.message);
     }
   };
@@ -87,17 +116,15 @@ export default function ManageUsersPage() {
   const fetchDetails = async (id) => {
     try {
       const response = await fetch(`/api/admin/users/${id}`, {
+        method: "GET",
         cache: "no-store",
       });
 
-      const result = await response.json();
-
-      if (!response.ok || !result.success) {
-        throw new Error(result.message || "Unable to load details");
-      }
+      const result = await parseResponse(response);
 
       setSelectedUser(result.data);
     } catch (err) {
+      console.error("Fetch User Details Error:", err);
       alert(err.message);
     }
   };
@@ -137,7 +164,7 @@ export default function ManageUsersPage() {
         >
           <option value="">All Roles</option>
           <option value="vendor">Vendor</option>
-          <option value="customer">Customer</option>
+          <option value="user">Customer</option>
           <option value="admin">Admin</option>
         </select>
 

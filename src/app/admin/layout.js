@@ -10,6 +10,9 @@ export const metadata = {
   title: "Admin Dashboard | Wedding Planning",
 };
 
+// Allow this route to use blocking dynamic rendering
+export const instant = false;
+
 export default async function AdminLayout({ children }) {
   const session = await auth.api.getSession({
     headers: await headers(),
