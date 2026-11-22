@@ -73,12 +73,20 @@ export async function GET() {
 
     if (user.role !== "user") {
       return NextResponse.json(
-        { success: false, message: "Only users can access their bookings" },
+        {
+          success: false,
+          message: "Only users can access their bookings",
+        },
         { status: 403 },
       );
     }
 
+    if (!API_URL) {
+      throw new Error("NEXT_PUBLIC_API_URL is not configured");
+    }
+
     const response = await fetch(`${API_URL}/my-bookings`, {
+      method: "GET",
       headers: {
         "x-internal-secret": process.env.INTERNAL_API_SECRET,
         "x-user-id": user.id,
@@ -87,7 +95,22 @@ export async function GET() {
       cache: "no-store",
     });
 
-    const data = await response.json();
+    const text = await response.text();
+
+    let data;
+
+    try {
+      data = JSON.parse(text);
+    } catch {
+      console.error("Backend returned invalid JSON:", response.status, text);
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Invalid response from backend",
+        },
+        { status: 502 },
+      );
+    }
 
     return NextResponse.json(data, {
       status: response.status,
@@ -96,7 +119,7 @@ export async function GET() {
     console.error("Fetch My Bookings Error:", error);
 
     return NextResponse.json(
-      { success: false, message: "Internal server error" },
+      { success: false, message: error.message || "Internal server error" },
       { status: 500 },
     );
   }
