@@ -10,7 +10,7 @@ import {
   Crown,
 } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 
 const statsConfig = [
   {
@@ -39,7 +39,15 @@ const statsConfig = [
   },
 ];
 
-export default function VendorDashboard() {
+function DashboardLoading() {
+  return (
+    <div className="flex min-h-[50vh] items-center justify-center">
+      <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#A94F70] border-t-transparent" />
+    </div>
+  );
+}
+
+function DashboardContent() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -55,7 +63,7 @@ export default function VendorDashboard() {
 
         setData(result.data);
       } catch (error) {
-        console.error(error);
+        console.error("Vendor Dashboard Error:", error);
       } finally {
         setLoading(false);
       }
@@ -65,11 +73,7 @@ export default function VendorDashboard() {
   }, []);
 
   if (loading) {
-    return (
-      <div className="flex min-h-[50vh] items-center justify-center">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#A94F70] border-t-transparent" />
-      </div>
-    );
+    return <DashboardLoading />;
   }
 
   if (!data) {
@@ -185,6 +189,7 @@ export default function VendorDashboard() {
                 Expand your wedding service business.
               </p>
             </div>
+
             <BriefcaseBusiness className="text-[#A94F70] transition group-hover:scale-110" />
           </div>
         </Link>
@@ -202,10 +207,19 @@ export default function VendorDashboard() {
                 Respond to your customers.
               </p>
             </div>
+
             <CalendarCheck className="text-[#A94F70] transition group-hover:scale-110" />
           </div>
         </Link>
       </div>
     </div>
+  );
+}
+
+export default function VendorDashboard() {
+  return (
+    <Suspense fallback={<DashboardLoading />}>
+      <DashboardContent />
+    </Suspense>
   );
 }

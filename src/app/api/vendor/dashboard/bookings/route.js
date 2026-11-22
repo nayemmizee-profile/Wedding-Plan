@@ -1,8 +1,11 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { NextResponse } from "next/server";
+import { connection, NextResponse } from "next/server";
 
 export async function GET(request) {
+  // IMPORTANT: Keep this OUTSIDE try-catch
+  await connection();
+
   try {
     // 1. Verify session
     const session = await auth.api.getSession({
@@ -30,10 +33,15 @@ export async function GET(request) {
       );
     }
 
-    // 3. Get status filter from URL
+    // 3. Get status filter
     const status = request.nextUrl.searchParams.get("status");
 
-    // 4. Build backend URL
+    // 4. Validate backend URL
+    if (!process.env.NEXT_PUBLIC_API_URL) {
+      throw new Error("Backend API URL is not configured");
+    }
+
+    // 5. Build backend URL
     const backendUrl = new URL(
       `${process.env.NEXT_PUBLIC_API_URL}/vendor/bookings`,
     );
@@ -42,7 +50,7 @@ export async function GET(request) {
       backendUrl.searchParams.set("status", status);
     }
 
-    // 5. Request Express backend
+    // 6. Request Express backend
     const response = await fetch(backendUrl.toString(), {
       method: "GET",
       headers: {
@@ -52,6 +60,7 @@ export async function GET(request) {
       cache: "no-store",
     });
 
+    // 7. Parse backend response
     const data = await response.json();
 
     return NextResponse.json(data, {

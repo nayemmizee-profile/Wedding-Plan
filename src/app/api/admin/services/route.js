@@ -1,12 +1,14 @@
 import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
-import { NextResponse } from "next/server";
+import { connection, NextResponse } from "next/server";
 
 export async function GET(request) {
+  // 1. Wait for incoming request
+  await connection();
+
   try {
-    // 1. Verify logged-in user
+    // 2. Verify logged-in user
     const session = await auth.api.getSession({
-      headers: await headers(),
+      headers: request.headers,
     });
 
     if (!session?.user) {
@@ -19,31 +21,45 @@ export async function GET(request) {
       );
     }
 
-    // 2. Get search and status query
+    // 3. Get search and status query
     const { searchParams } = new URL(request.url);
 
     const query = searchParams.toString() ? `?${searchParams.toString()}` : "";
 
-    // 3. Call Express Backend
+    // 4. Check environment variables
+    const API_URL = process.env.API_URL;
+    const INTERNAL_API_SECRET = process.env.INTERNAL_API_SECRET;
+
+    if (!API_URL || !INTERNAL_API_SECRET) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Server configuration error",
+        },
+        { status: 500 },
+      );
+    }
+
+    // 5. Call Express Backend
     const response = await fetch(
-      `${process.env.API_URL}/admin/services${query}`,
+      `${API_URL.replace(/\/$/, "")}/admin/services${query}`,
       {
         method: "GET",
         headers: {
-          "x-internal-secret": process.env.INTERNAL_API_SECRET,
+          "x-internal-secret": INTERNAL_API_SECRET,
           "x-user-id": session.user.id,
         },
         cache: "no-store",
       },
     );
 
-    // 4. Read Express response
+    // 6. Read Express response
     const responseText = await response.text();
 
     console.log("Express Status:", response.status);
     console.log("Express Response:", responseText);
 
-    // 5. Parse JSON safely
+    // 7. Parse JSON safely
     let result;
 
     try {
@@ -60,7 +76,7 @@ export async function GET(request) {
       );
     }
 
-    // 6. Return response to Frontend
+    // 8. Return response to Frontend
     return NextResponse.json(result, {
       status: response.status,
     });

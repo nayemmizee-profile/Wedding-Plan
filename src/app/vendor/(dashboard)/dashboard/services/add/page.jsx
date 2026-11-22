@@ -118,6 +118,11 @@ export default function AddServicePage() {
 
       const data = JSON.parse(responseText);
 
+      if (data.code === "SERVICE_LIMIT_REACHED") {
+        router.push("/vendor/upgrade");
+        return;
+      }
+
       if (!response.ok || !data.success) {
         throw new Error(data.message || "Failed to add service");
       }

@@ -1,30 +1,36 @@
 import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(request) {
+  // IMPORTANT: Access request headers outside try-catch
+  const requestHeaders = request.headers;
+
   try {
-    // Verify logged-in user
+    // 1. Verify logged-in user
     const session = await auth.api.getSession({
-      headers: await headers(),
+      headers: requestHeaders,
     });
 
     if (!session?.user) {
       return NextResponse.json(
-        { success: false, isAdmin: false },
+        {
+          success: false,
+          isAdmin: false,
+        },
         { status: 401 },
       );
     }
 
-    // Get Admin IDs from server environment
+    // 2. Get Admin IDs from server environment
     const adminIds = (process.env.ADMIN_USER_IDS || "")
       .split(",")
       .map((id) => id.trim())
       .filter(Boolean);
 
-    // Check current user's ID
+    // 3. Check current user's ID
     const isAdmin = adminIds.includes(session.user.id);
 
+    // 4. Return admin verification result
     return NextResponse.json({
       success: true,
       isAdmin,

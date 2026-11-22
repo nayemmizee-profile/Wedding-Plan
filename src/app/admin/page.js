@@ -1,7 +1,14 @@
 "use client";
 
-import StatCard from "@/Components/admin/StatCard";
-import { RefreshCw } from "lucide-react";
+import {
+  BriefcaseBusiness,
+  Clock,
+  CreditCard,
+  RefreshCw,
+  Store,
+  UserRound,
+  Users,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function AdminDashboard() {
@@ -21,16 +28,13 @@ export default function AdminDashboard() {
       const result = await response.json();
 
       if (!response.ok || !result.success) {
-        throw new Error(result.message || "Failed to load dashboard");
+        throw new Error(result.message || "Failed to load dashboard data");
       }
 
-      console.log("Admin Overview Response:", result);
-
-      // Backend থেকে overview Object গ্রহণ
       setStats(result.overview);
     } catch (err) {
-      console.error("Overview Fetch Error:", err);
-      setError(err.message);
+      console.error("Dashboard Error:", err);
+      setError(err.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -40,102 +44,126 @@ export default function AdminDashboard() {
     fetchOverview();
   }, []);
 
-  const cards = [
+  const dashboardCards = [
     {
       title: "Registered Users",
       value: stats?.totalUsers ?? 0,
-      type: "users",
-      color: "blue",
-      description: "All platform accounts",
+      icon: Users,
+      color: "bg-blue-50 text-blue-600",
     },
     {
       title: "Total Vendors",
       value: stats?.totalVendors ?? 0,
-      type: "vendors",
-      color: "purple",
-      description: "Registered service providers",
+      icon: Store,
+      color: "bg-purple-50 text-purple-600",
     },
     {
       title: "Total Customers",
       value: stats?.totalCustomers ?? 0,
-      type: "customers",
-      color: "green",
-      description: "Registered customers",
+      icon: UserRound,
+      color: "bg-green-50 text-green-600",
     },
     {
       title: "Total Services",
       value: stats?.totalServices ?? 0,
-      type: "services",
-      color: "orange",
-      description: "All submitted services",
+      icon: BriefcaseBusiness,
+      color: "bg-orange-50 text-orange-600",
     },
     {
       title: "Pending Services",
       value: stats?.pendingServices ?? 0,
-      type: "pending",
-      color: "pink",
-      description: "Waiting for approval",
+      icon: Clock,
+      color: "bg-yellow-50 text-yellow-600",
     },
     {
       title: "Total Transactions",
       value: stats?.totalTransactions ?? 0,
-      type: "transactions",
-      color: "teal",
-      description: "Recorded payment transactions",
+      icon: CreditCard,
+      color: "bg-pink-50 text-pink-600",
     },
   ];
 
+  if (loading) {
+    return (
+      <div className="flex min-h-[300px] items-center justify-center">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-[#359FA0]" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-center">
+        <p className="font-medium text-red-600">{error}</p>
+
+        <button
+          onClick={fetchOverview}
+          className="mt-4 inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-700"
+        >
+          <RefreshCw size={16} />
+          Try Again
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <div>
-      <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
+    <section className="space-y-7">
+      {/* Dashboard Heading */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-sm font-medium text-pink-600">
-            Welcome to WedPlan
-          </p>
+          <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
 
-          <h1 className="mt-1 text-2xl font-bold text-gray-900 md:text-3xl">
-            Dashboard Overview
-          </h1>
-
-          <p className="mt-2 text-sm text-gray-500">
-            Monitor and manage your entire platform.
+          <p className="mt-1 text-sm text-gray-500">
+            Overview of your platform activities
           </p>
         </div>
 
         <button
           onClick={fetchOverview}
-          disabled={loading}
-          className="flex items-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-gray-50 disabled:opacity-50"
+          className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
         >
-          <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
+          <RefreshCw size={16} />
           Refresh
         </button>
       </div>
 
-      {error && (
-        <div className="mb-5 rounded-xl bg-red-50 p-4 text-sm text-red-600">
-          {error}
-        </div>
-      )}
+      {/* Statistics Cards */}
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+        {dashboardCards.map((card) => {
+          const Icon = card.icon;
 
-      {loading ? (
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, index) => (
+          return (
             <div
-              key={index}
-              className="h-44 animate-pulse rounded-2xl bg-white shadow-sm"
-            />
-          ))}
-        </div>
-      ) : (
-        <>
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
-            {cards.map((card) => (
-              <StatCard key={card.title} {...card} />
-            ))}
-          </div>
+              key={card.title}
+              className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-md"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-500">
+                    {card.title}
+                  </p>
 
-          <div className="mt-7 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+                  <h2 className="mt-3 text-3xl font-bold text-gray-900">
+                    {Number(card.value).toLocaleString("en-US")}
+                  </h2>
+                </div>
+
+                <div
+                  className={`flex h-12 w-12 items-center justify-center rounded-xl ${card.color}`}
+                >
+                  <Icon size={24} />
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Transaction Summary */}
+      <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+        <div className="flex items-center justify-between gap-4">
+          <div>
             <h2 className="text-lg font-bold text-gray-900">
               Transaction Summary
             </h2>
@@ -143,16 +171,25 @@ export default function AdminDashboard() {
             <p className="mt-2 text-sm text-gray-500">
               Total successfully received payment amount
             </p>
-
-            <p className="mt-4 text-3xl font-bold text-green-600">
-              ৳
-              {Number(stats?.totalTransactionAmount || 0).toLocaleString(
-                "en-BD",
-              )}
-            </p>
           </div>
-        </>
-      )}
-    </div>
+
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-green-50 text-green-600">
+            <CreditCard size={24} />
+          </div>
+        </div>
+
+        <p className="mt-5 text-3xl font-bold text-green-600">
+          $
+          {Number(stats?.totalTransactionAmount || 0).toLocaleString("en-US", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
+        </p>
+
+        <p className="mt-2 text-xs text-gray-400">
+          Only successful USD payments are included
+        </p>
+      </div>
+    </section>
   );
 }

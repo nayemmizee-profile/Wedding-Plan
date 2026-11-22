@@ -1,8 +1,15 @@
 "use client";
+
 import { CalendarHeart, Camera, Heart, Sparkles } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export default function AuthLayout({ children, page = "login" }) {
+  const [currentYear, setCurrentYear] = useState(null);
+
+  useEffect(() => {
+    setCurrentYear(new Date().getFullYear());
+  }, []);
   const isRegister = page === "register";
 
   return (
@@ -54,7 +61,7 @@ export default function AuthLayout({ children, page = "login" }) {
           </div>
 
           <p className="relative z-10 text-sm text-white/70">
-            © {new Date().getFullYear()} WedPlan. Made with love.
+            © {currentYear ?? ""} WedPlan. Made with love.
           </p>
         </section>
 

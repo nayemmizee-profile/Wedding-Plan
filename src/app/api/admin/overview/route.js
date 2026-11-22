@@ -1,18 +1,23 @@
 import { isAdmin } from "@/lib/adminAuth";
 import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
-import { NextResponse } from "next/server";
+import { connection, NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(request) {
+  // IMPORTANT: Keep this OUTSIDE try...catch
+  await connection();
+
   try {
     // 1. Verify user session
     const session = await auth.api.getSession({
-      headers: await headers(),
+      headers: request.headers,
     });
 
     if (!session?.user) {
       return NextResponse.json(
-        { success: false, message: "Unauthorized" },
+        {
+          success: false,
+          message: "Unauthorized",
+        },
         { status: 401 },
       );
     }
@@ -20,7 +25,10 @@ export async function GET() {
     // 2. Verify admin role
     if (!isAdmin(session.user.id)) {
       return NextResponse.json(
-        { success: false, message: "Admin access required" },
+        {
+          success: false,
+          message: "Admin access required",
+        },
         { status: 403 },
       );
     }
@@ -33,7 +41,10 @@ export async function GET() {
       console.error("Missing API_URL or INTERNAL_API_SECRET");
 
       return NextResponse.json(
-        { success: false, message: "Server configuration error" },
+        {
+          success: false,
+          message: "Server configuration error",
+        },
         { status: 500 },
       );
     }
