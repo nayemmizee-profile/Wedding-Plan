@@ -54,15 +54,15 @@ export default function VendorServicesPage() {
   }, []);
 
   const pending = services.filter(
-    (service) => service.status === "pending",
+    (service) => service.approvalStatus === "pending",
   ).length;
 
   const approved = services.filter(
-    (service) => service.status === "approved",
+    (service) => service.approvalStatus === "approved",
   ).length;
 
   const rejected = services.filter(
-    (service) => service.status === "rejected",
+    (service) => service.approvalStatus === "rejected",
   ).length;
 
   if (loading) {

@@ -22,11 +22,9 @@ export default function BookingRequestsPage() {
     try {
       setLoading(true);
 
-      const response = await fetch(
-        `/api/vendor/dashboard/bookings?status=${filter}`,
-        { cache: "no-store" },
-      );
-
+      const response = await fetch(`/api/vendor/bookings?status=${filter}`, {
+        cache: "no-store",
+      });
       const result = await response.json();
 
       if (!response.ok || !result.success) {
@@ -64,12 +62,13 @@ export default function BookingRequestsPage() {
     try {
       setProcessingId(id);
 
-      const response = await fetch(`/api/vendor/dashboard/bookings/${id}`, {
+      const action = status === "accepted" ? "accept" : "reject";
+
+      const response = await fetch(`/api/vendor/bookings/${id}/${action}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ status }),
       });
 
       const result = await response.json();

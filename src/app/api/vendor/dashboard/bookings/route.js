@@ -1,78 +1,60 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { connection, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 export async function GET(request) {
-  // IMPORTANT: Keep this OUTSIDE try-catch
-  await connection();
-
   try {
-    // 1. Verify session
+    // Get logged-in session
     const session = await auth.api.getSession({
       headers: await headers(),
     });
 
-    if (!session?.user) {
+    const user = session?.user;
+
+    if (!user) {
       return NextResponse.json(
-        {
-          success: false,
-          message: "Please login first",
-        },
+        { success: false, message: "Unauthorized" },
         { status: 401 },
       );
     }
 
-    // 2. Verify vendor role
-    if (session.user.role !== "vendor") {
+    if (user.role !== "vendor") {
       return NextResponse.json(
-        {
-          success: false,
-          message: "Only vendors can view bookings",
-        },
+        { success: false, message: "Only vendors can access bookings" },
         { status: 403 },
       );
     }
 
-    // 3. Get status filter
-    const status = request.nextUrl.searchParams.get("status");
+    // Get status from frontend URL
+    const { searchParams } = new URL(request.url);
+    const status = searchParams.get("status") || "all";
 
-    // 4. Validate backend URL
-    if (!process.env.NEXT_PUBLIC_API_URL) {
-      throw new Error("Backend API URL is not configured");
-    }
-
-    // 5. Build backend URL
-    const backendUrl = new URL(
-      `${process.env.NEXT_PUBLIC_API_URL}/vendor/bookings`,
+    // Send request to Express backend
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/vendor/bookings?status=${encodeURIComponent(status)}`,
+      {
+        method: "GET",
+        headers: {
+          "x-internal-secret": process.env.INTERNAL_API_SECRET,
+          "x-user-id": user.id,
+          "x-user-role": user.role,
+        },
+        cache: "no-store",
+      },
     );
 
-    if (status) {
-      backendUrl.searchParams.set("status", status);
-    }
-
-    // 6. Request Express backend
-    const response = await fetch(backendUrl.toString(), {
-      method: "GET",
-      headers: {
-        "x-internal-secret": process.env.INTERNAL_API_SECRET,
-        "x-user-id": session.user.id,
-      },
-      cache: "no-store",
-    });
-
-    // 7. Parse backend response
     const data = await response.json();
 
     return NextResponse.json(data, {
       status: response.status,
     });
   } catch (error) {
-    console.error("VENDOR BOOKINGS API ERROR:", error);
+    console.error("Vendor Bookings Route Error:", error);
 
     return NextResponse.json(
       {
         success: false,
-        message: error.message || "Failed to fetch bookings",
+        message: "Internal server error",
       },
       { status: 500 },
     );
