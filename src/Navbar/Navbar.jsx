@@ -28,7 +28,7 @@ const guestLinks = [
 const userLinks = [
   { name: "Home", href: "/" },
   { name: "Find Vendors", href: "/vendors" },
-  { name: "My Bookings", href: "/my-bookings" },
+  { name: "My Bookings", href: "/user/my-bookings" },
   { name: "Dashboard", href: "/user/dashboard" },
 ];
 

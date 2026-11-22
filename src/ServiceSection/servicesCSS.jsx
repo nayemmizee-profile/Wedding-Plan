@@ -1,100 +1,147 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, CalendarDays, Heart, Sparkles } from "lucide-react";
+import { ArrowRight, Flower2, Heart, Sparkles } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 export default function HomeCTA() {
   return (
-    <section className="bg-[#FAFAF8] px-5 pb-24 sm:px-8 lg:px-16">
+    <section className="overflow-hidden bg-[#FBF7F2] px-5 py-20 sm:px-8 lg:px-16">
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 0.7, ease: "easeOut" }}
-        className="relative mx-auto max-w-[1440px] overflow-hidden rounded-[32px] bg-[#244F42] px-6 py-16 text-center text-white sm:px-12 sm:py-20 lg:py-24"
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+        className="relative mx-auto max-w-[1440px] overflow-hidden rounded-[30px] bg-[#F1E5DD]"
       >
-        {/* Background Decoration */}
+        <div className="grid items-center lg:grid-cols-2">
+          {/* Left Content */}
 
-        <div className="absolute -right-20 -top-28 h-80 w-80 rounded-full border-[45px] border-white/[0.04]" />
+          <div className="relative z-10 px-7 py-16 sm:px-12 lg:px-16 lg:py-24">
+            <motion.div
+              animate={{ rotate: [0, 12, -12, 0] }}
+              transition={{ duration: 7, repeat: Infinity }}
+              className="mb-7 inline-flex rounded-full bg-white p-4 text-[#A66B72] shadow-sm"
+            >
+              <Heart size={25} />
+            </motion.div>
 
-        <div className="absolute -bottom-32 -left-20 h-80 w-80 rounded-full border-[45px] border-white/[0.04]" />
+            <p className="mb-5 text-xs font-semibold uppercase tracking-[4px] text-[#A66B72]">
+              Your Love Story Begins Here
+            </p>
 
-        <motion.div
-          animate={{ rotate: [0, 15, -15, 0] }}
-          transition={{ duration: 6, repeat: Infinity }}
-          className="absolute right-[15%] top-16 hidden text-[#BBDCCB]/30 md:block"
-        >
-          <Sparkles size={55} />
-        </motion.div>
+            <h2 className="font-serif text-4xl leading-[1.2] text-[#513B3B] sm:text-5xl lg:text-[62px]">
+              Every Love Story
+              <span className="block italic text-[#B77C83]">Deserves a</span>
+              Beautiful Beginning.
+            </h2>
 
-        <motion.div
-          animate={{ y: [0, -12, 0] }}
-          transition={{ duration: 4, repeat: Infinity }}
-          className="absolute bottom-16 left-[15%] hidden text-[#BBDCCB]/30 md:block"
-        >
-          <Heart size={48} />
-        </motion.div>
+            <p className="mt-7 max-w-lg text-sm leading-8 text-[#806B68] sm:text-base">
+              Your wedding day is more than an event. It's a beautiful memory
+              you'll cherish forever. Discover extraordinary venues, talented
+              photographers and trusted wedding professionals to make your dream
+              celebration come true.
+            </p>
 
-        {/* Content */}
+            <div className="mt-9 flex flex-col gap-4 sm:flex-row">
+              <Link
+                href="/#services"
+                className="group inline-flex items-center justify-center gap-3 rounded-full bg-[#A66B72] px-8 py-4 text-sm font-semibold text-white shadow-lg shadow-[#A66B72]/20 transition-all duration-300 hover:-translate-y-1 hover:bg-[#8D565F]"
+              >
+                Find Your Wedding Vendors
+                <ArrowRight
+                  size={18}
+                  className="transition-transform group-hover:translate-x-1"
+                />
+              </Link>
 
-        <div className="relative z-10 mx-auto max-w-3xl">
-          <div className="mx-auto mb-7 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10 text-[#C6E5D4] backdrop-blur">
-            <CalendarDays size={32} />
+              <Link
+                href="/register"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-[#CDA9A4] px-7 py-4 text-sm font-semibold text-[#79575A] transition hover:bg-white/60"
+              >
+                Join Our Community
+              </Link>
+            </div>
+
+            <div className="mt-12 flex flex-wrap items-center gap-6 text-xs font-medium text-[#967B76]">
+              <span className="flex items-center gap-2">
+                <Heart size={15} className="text-[#B77C83]" />
+                Made With Love
+              </span>
+
+              <span className="flex items-center gap-2">
+                <Sparkles size={15} className="text-[#B77C83]" />
+                Beautiful Memories
+              </span>
+            </div>
           </div>
 
-          <p className="mb-4 text-sm font-semibold uppercase tracking-[4px] text-[#BBDCCB]">
-            Make It Memorable
-          </p>
+          {/* Right Image */}
 
-          <h2 className="text-3xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
-            Your Perfect Event
-            <span className="block text-[#BBDCCB]">Starts Right Here.</span>
-          </h2>
+          <div className="relative min-h-[420px] overflow-hidden sm:min-h-[550px] lg:min-h-[680px]">
+            <Image
+              src="https://images.unsplash.com/photo-1519741497674-611481863552?w=1200"
+              alt="Romantic wedding celebration"
+              fill
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              className="object-cover"
+            />
 
-          <p className="mx-auto mt-6 max-w-xl text-sm leading-8 text-white/70 sm:text-base">
-            From stunning venues to amazing professionals, discover everything
-            you need to make your next celebration truly unforgettable.
-          </p>
+            <div className="absolute inset-0 bg-gradient-to-t from-[#513B3B]/30 via-transparent to-transparent" />
 
-          <div className="mt-9 flex flex-col justify-center gap-4 sm:flex-row">
-            <Link
-              href="/#services"
-              className="group inline-flex items-center justify-center gap-3 rounded-full bg-white px-8 py-4 font-semibold text-[#244F42] transition-all duration-300 hover:scale-105 hover:bg-[#EAF3ED]"
+            {/* Floating Heart */}
+
+            <motion.div
+              animate={{
+                y: [0, -15, 0],
+                rotate: [0, 8, -8, 0],
+              }}
+              transition={{
+                duration: 5,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+              className="absolute right-8 top-10 rounded-full bg-white/90 p-4 text-[#B77C83] shadow-xl backdrop-blur"
             >
-              Explore Services
-              <ArrowRight
-                size={19}
-                className="transition-transform group-hover:translate-x-1"
-              />
-            </Link>
+              <Heart size={25} fill="currentColor" />
+            </motion.div>
 
-            <Link
-              href="/register"
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-white/30 px-8 py-4 font-semibold text-white transition-all duration-300 hover:bg-white/10"
+            {/* Wedding Quote */}
+
+            <motion.div
+              initial={{ opacity: 0, y: 25 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.5, duration: 0.8 }}
+              className="absolute bottom-8 left-6 right-6 rounded-2xl border border-white/40 bg-white/85 p-6 text-center shadow-xl backdrop-blur-md sm:bottom-12 sm:left-10 sm:right-10"
             >
-              Join Our Community
-              <Sparkles size={18} />
-            </Link>
-          </div>
+              <Flower2 size={22} className="mx-auto mb-3 text-[#B77C83]" />
 
-          <div className="mt-12 flex flex-wrap items-center justify-center gap-x-8 gap-y-4 text-sm text-white/60">
-            <span className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-[#BBDCCB]" />
-              Trusted Professionals
-            </span>
+              <p className="font-serif text-2xl italic text-[#684D4D]">
+                "Together is a beautiful place to be."
+              </p>
 
-            <span className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-[#BBDCCB]" />
-              Easy Booking
-            </span>
-
-            <span className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-[#BBDCCB]" />
-              Memorable Experiences
-            </span>
+              <p className="mt-3 text-[10px] font-semibold uppercase tracking-[3px] text-[#A77C7B]">
+                Forever Starts Today
+              </p>
+            </motion.div>
           </div>
         </div>
+
+        {/* Decorative Flowers */}
+
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{
+            duration: 35,
+            repeat: Infinity,
+            ease: "linear",
+          }}
+          className="pointer-events-none absolute -bottom-12 -left-12 text-[#B77C83]/10"
+        >
+          <Flower2 size={180} />
+        </motion.div>
       </motion.div>
     </section>
   );

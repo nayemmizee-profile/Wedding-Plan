@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const sort = searchParams.get("sort") || "newest";
+
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/services/approved`,
+      `${process.env.NEXT_PUBLIC_API_URL}/services/approved?sort=${encodeURIComponent(sort)}`,
       {
         headers: {
           "x-internal-secret": process.env.INTERNAL_API_SECRET,

@@ -1,5 +1,6 @@
 "use client";
 
+import BookNowButton from "@/Components/home/BookNowButton";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowRight,
@@ -41,6 +42,7 @@ const cardVariants = {
 
 export default function ServiceSection() {
   const [services, setServices] = useState([]);
+  const [sort, setSort] = useState("newest");
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
@@ -48,8 +50,10 @@ export default function ServiceSection() {
 
   useEffect(() => {
     const fetchServices = async () => {
+      setLoading(true);
+
       try {
-        const response = await fetch("/api/services/approved");
+        const response = await fetch(`/api/services/approved?sort=${sort}`);
 
         const data = await response.json();
 
@@ -60,13 +64,14 @@ export default function ServiceSection() {
         setServices(data.services || []);
       } catch (error) {
         console.error("Service Fetch Error:", error);
+        setServices([]);
       } finally {
         setLoading(false);
       }
     };
 
     fetchServices();
-  }, []);
+  }, [sort]);
 
   // Dynamic categories from database
   const categories = useMemo(() => {
@@ -158,6 +163,15 @@ export default function ServiceSection() {
               placeholder="Search service, vendor or location..."
               className="w-full bg-transparent py-3 text-sm outline-none placeholder:text-gray-400"
             />
+            <select
+              className="p-2 text-green-700 font-bold"
+              value={sort}
+              onChange={(e) => setSort(e.target.value)}
+            >
+              <option value="newest">Price Sorting</option>
+              <option value="lowToHigh">Price: Low to High</option>
+              <option value="highToLow">Price: High to Low</option>
+            </select>
           </div>
 
           <div className="flex flex-wrap gap-2">
@@ -351,13 +365,7 @@ export default function ServiceSection() {
                             <ArrowUpRight size={16} />
                           </Link>
 
-                          <Link
-                            href={`/book-service/${service._id}`}
-                            className="flex items-center justify-center gap-2 rounded-xl bg-[#244F42] py-3 text-sm font-semibold text-white transition hover:bg-[#57947C]"
-                          >
-                            Book Now
-                            <ArrowRight size={16} />
-                          </Link>
+                          <BookNowButton service={service} />
                         </div>
                       </div>
                     </motion.article>
@@ -367,6 +375,19 @@ export default function ServiceSection() {
             </motion.div>
           </>
         )}
+      </div>
+      {/* See All Services Button */}
+      <div className="flex justify-center mt-8">
+        <Link
+          href="/services"
+          className="group inline-flex items-center gap-2 rounded-full border border-[#B77C83] px-7 py-3 text-sm font-semibold text-[#B77C83] transition-all duration-300 hover:bg-[#B77C83] hover:text-white"
+        >
+          See All Services
+          <ArrowRight
+            size={18}
+            className="transition-transform duration-300 group-hover:translate-x-1"
+          />
+        </Link>
       </div>
     </section>
   );

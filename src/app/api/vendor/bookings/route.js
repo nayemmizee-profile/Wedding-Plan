@@ -2,38 +2,36 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
-export async function POST(request) {
+export async function GET() {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
     });
 
-    if (!session?.user) {
+    const user = session?.user;
+
+    if (!user) {
       return NextResponse.json(
         { success: false, message: "Unauthorized" },
         { status: 401 },
       );
     }
 
-    const { sessionId } = await request.json();
-
-    if (!sessionId) {
+    if (user.role !== "vendor") {
       return NextResponse.json(
-        { success: false, message: "Session ID required" },
-        { status: 400 },
+        { success: false, message: "Only vendors can access this page" },
+        { status: 403 },
       );
     }
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/stripe/verify-payment`,
+      `${process.env.NEXT_PUBLIC_API_URL}/vendor/bookings`,
       {
-        method: "POST",
         headers: {
-          "Content-Type": "application/json",
           "x-internal-secret": process.env.INTERNAL_API_SECRET,
-          "x-user-id": session.user.id,
+          "x-user-id": user.id,
+          "x-user-role": user.role,
         },
-        body: JSON.stringify({ sessionId }),
         cache: "no-store",
       },
     );
@@ -44,13 +42,10 @@ export async function POST(request) {
       status: response.status,
     });
   } catch (error) {
-    console.error("Payment Verification Error:", error);
+    console.error("Vendor Bookings Route Error:", error);
 
     return NextResponse.json(
-      {
-        success: false,
-        message: "Internal server error",
-      },
+      { success: false, message: "Internal server error" },
       { status: 500 },
     );
   }

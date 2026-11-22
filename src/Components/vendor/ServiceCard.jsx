@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Eye, EyeOff, MapPin, Pencil, Trash2 } from "lucide-react";
+import Image from "next/image";
 
 export default function ServiceCard({
   service,
@@ -25,7 +26,7 @@ export default function ServiceCard({
       className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm"
     >
       <div className="relative h-52 overflow-hidden bg-gray-100">
-        <img
+        <Image
           src={service.image}
           alt={service.serviceName}
           className="h-full w-full object-cover transition duration-500 hover:scale-110"

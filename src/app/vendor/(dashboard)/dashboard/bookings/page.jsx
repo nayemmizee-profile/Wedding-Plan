@@ -2,11 +2,12 @@
 
 import BookingTable from "@/Components/vendor/BookingTable";
 import { CalendarCheck, Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export default function BookingRequestsPage() {
   const [bookings, setBookings] = useState([]);
   const [filter, setFilter] = useState("all");
+
   const [counts, setCounts] = useState({
     pending: 0,
     accepted: 0,
@@ -16,64 +17,43 @@ export default function BookingRequestsPage() {
   const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState(null);
 
-  // Fetch bookings from backend
-  useEffect(() => {
-    let ignore = false;
+  // Fetch vendor bookings
+  const fetchBookings = useCallback(async () => {
+    try {
+      setLoading(true);
 
-    const fetchBookings = async () => {
-      try {
-        setLoading(true);
+      const response = await fetch(
+        `/api/vendor/dashboard/bookings?status=${filter}`,
+        { cache: "no-store" },
+      );
 
-        const response = await fetch(
-          `/api/vendor/dashboard/bookings?status=${filter}`,
-          {
-            cache: "no-store",
-          },
-        );
+      const result = await response.json();
 
-        const text = await response.text();
-
-        console.log("HTTP Status:", response.status);
-        console.log("Response:", text);
-
-        let result;
-
-        try {
-          result = JSON.parse(text);
-        } catch {
-          throw new Error(
-            "Server returned HTML instead of JSON. Check API route and backend URL.",
-          );
-        }
-
-        if (!response.ok || !result.success) {
-          throw new Error(result.message || "Failed to load bookings");
-        }
-
-        setBookings(result.bookings || []);
-        setCounts(
-          result.counts || {
-            pending: 0,
-            accepted: 0,
-            rejected: 0,
-          },
-        );
-      } catch (error) {
-        console.error("Booking Fetch Error:", error);
-        alert(error.message);
-      } finally {
-        setLoading(false);
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || "Failed to load bookings");
       }
-    };
 
-    fetchBookings();
+      setBookings(result.bookings || []);
 
-    return () => {
-      ignore = true;
-    };
+      setCounts(
+        result.counts || {
+          pending: 0,
+          accepted: 0,
+          rejected: 0,
+        },
+      );
+    } catch (error) {
+      console.error("Booking Fetch Error:", error);
+    } finally {
+      setLoading(false);
+    }
   }, [filter]);
 
-  // Accept / Reject Booking
+  useEffect(() => {
+    fetchBookings();
+  }, [fetchBookings]);
+
+  // Accept / Reject booking
   const handleAction = async (id, status) => {
     const action = status === "accepted" ? "accept" : "reject";
 
@@ -98,24 +78,10 @@ export default function BookingRequestsPage() {
         throw new Error(result.message || "Failed to update booking");
       }
 
-      // Update current booking list
-      setBookings((prev) => prev.filter((booking) => booking._id !== id));
-
-      // Refresh data and counts from server
-      const refreshResponse = await fetch(
-        `/api/vendor/bookings?status=${filter}`,
-        { cache: "no-store" },
-      );
-
-      const refreshData = await refreshResponse.json();
-
-      if (!refreshResponse.ok || !refreshData.success) {
-        throw new Error(refreshData.message || "Failed to refresh bookings");
-      }
-
-      setBookings(refreshData.bookings || []);
-      setCounts(refreshData.counts || counts);
+      // Refresh bookings and counts
+      await fetchBookings();
     } catch (error) {
+      console.error("Booking Action Error:", error);
       alert(error.message);
     } finally {
       setProcessingId(null);
