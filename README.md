@@ -32,7 +32,7 @@ WedPlan is a full-stack wedding service booking platform that helps users discov
 
 **1. Clone the Client Repository**
 ```bash
-git clone YOUR_CLIENT_REPOSITORY_URL
+git clone https://github.com/nayemmizee-profile/Wedding-Plan.git
 ```
 
 **2. Clone the Server Repository**
