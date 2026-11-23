@@ -37,7 +37,7 @@ git clone https://github.com/nayemmizee-profile/Wedding-Plan.git
 
 **2. Clone the Server Repository**
 ```bash
-git clone YOUR_SERVER_REPOSITORY_URL
+git clone https://github.com/nayemmizee-profile/WedPlan-Backend.git
 ```
 
 **3. Install Dependencies**
