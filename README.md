@@ -69,7 +69,7 @@ Frontend: `http://localhost:3000`
 Backend: `http://localhost:9000`
 
 ## Live Website Link
-YOUR_LIVE_WEBSITE_URL
+LIVE_WEBSITE_URL  ====>  https://wedding-plan-navy.vercel.app/
 
 ## Client and Server Repository Links
 - **Client Repository:** YOUR_CLIENT_GITHUB_REPOSITORY_URL
