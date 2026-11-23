@@ -13,6 +13,7 @@ import {
   User,
 } from "lucide-react";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
@@ -172,9 +173,11 @@ function BookServiceContent() {
           {/* Service Information */}
           <div className="overflow-hidden rounded-2xl border border-rose-100 bg-white shadow-sm">
             {image && (
-              <img
+              <Image
                 src={image}
                 alt={service.serviceName}
+                width={100}
+                height={100}
                 className="h-64 w-full object-cover"
               />
             )}

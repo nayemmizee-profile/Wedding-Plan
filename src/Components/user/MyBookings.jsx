@@ -103,9 +103,7 @@ function MyBookingsContent() {
                       : "Not specified"}
                   </td>
 
-                  <td className="p-4">
-                    ৳{Number(booking.price || 0).toLocaleString("en-BD")}
-                  </td>
+                  <td className="p-4">${Number(booking.price)}</td>
 
                   <td className="p-4">
                     <span

@@ -15,6 +15,12 @@ const db = client.db("WEDDING_PLAN");
 
 export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL,
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_AUTH_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_AUTH_CLIENT_SECRET,
+    },
+  },
 
   database: mongodbAdapter(db, {
     client,

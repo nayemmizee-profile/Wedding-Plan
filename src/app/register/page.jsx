@@ -123,7 +123,7 @@ export default function RegisterPage() {
     try {
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: "/auth/redirect",
+        callbackURL: "/user/dashboard",
       });
     } catch (err) {
       console.error("Google signup error:", err);

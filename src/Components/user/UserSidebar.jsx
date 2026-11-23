@@ -11,6 +11,7 @@ import {
   UserRound,
   X,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -106,9 +107,11 @@ export default function UserSidebar({ user, sidebarOpen, setSidebarOpen }) {
           <div className="flex items-center gap-3">
             <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-rose-200 font-bold text-rose-700">
               {user?.image ? (
-                <img
+                <Image
                   src={user.image}
                   alt={user.name || "User"}
+                  width={100}
+                  height={100}
                   className="h-full w-full object-cover"
                 />
               ) : (
