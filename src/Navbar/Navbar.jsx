@@ -27,7 +27,7 @@ const guestLinks = [
 // User Navigation
 const userLinks = [
   { name: "Home", href: "/" },
-  { name: "Find Vendors", href: "/vendors" },
+  { name: "Find Vendors", href: "/all-services" },
   { name: "My Bookings", href: "/user/my-bookings" },
   { name: "Dashboard", href: "/user/dashboard" },
 ];

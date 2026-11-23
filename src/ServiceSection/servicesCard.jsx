@@ -358,7 +358,7 @@ export default function ServiceSection() {
 
                         <div className="grid grid-cols-2 gap-3">
                           <Link
-                            href={`/services/${service._id}`}
+                            href={`/book-service/${service._id}`}
                             className="flex items-center justify-center gap-2 rounded-xl border border-[#244F42] py-3 text-sm font-semibold text-[#244F42] transition hover:bg-[#F0F6F2]"
                           >
                             Details
@@ -379,7 +379,7 @@ export default function ServiceSection() {
       {/* See All Services Button */}
       <div className="flex justify-center mt-8">
         <Link
-          href="/services"
+          href="/all-services"
           className="group inline-flex items-center gap-2 rounded-full border border-[#B77C83] px-7 py-3 text-sm font-semibold text-[#B77C83] transition-all duration-300 hover:bg-[#B77C83] hover:text-white"
         >
           See All Services
