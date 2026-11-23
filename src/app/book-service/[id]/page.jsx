@@ -1,6 +1,9 @@
 "use client";
 
+import { Suspense, useEffect, useState } from "react";
+
 import { authClient } from "@/lib/auth-client";
+
 import {
   ArrowLeft,
   CalendarDays,
@@ -9,12 +12,13 @@ import {
   MapPin,
   User,
 } from "lucide-react";
+
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 
-export default function BookServicePage() {
+// Main Booking Content
+function BookServiceContent() {
   const { id } = useParams();
   const router = useRouter();
 
@@ -26,7 +30,7 @@ export default function BookServicePage() {
 
   const [eventDate, setEventDate] = useState("");
 
-  // Get today's date for minimum date
+  // Get Today's Date
   const today = new Date().toISOString().split("T")[0];
 
   // Fetch Service Details
@@ -119,6 +123,7 @@ export default function BookServicePage() {
     );
   }
 
+  // Service Not Found
   if (!service) {
     return (
       <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4">
@@ -300,5 +305,20 @@ export default function BookServicePage() {
         </div>
       </div>
     </main>
+  );
+}
+
+// Main Page with Suspense
+export default function BookServicePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-[60vh] items-center justify-center">
+          <Loader2 className="animate-spin text-rose-600" size={40} />
+        </div>
+      }
+    >
+      <BookServiceContent />
+    </Suspense>
   );
 }

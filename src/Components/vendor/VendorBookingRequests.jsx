@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import Image from "next/image";
+import { Suspense, useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 
-export default function VendorBookingRequests() {
+function VendorBookingContent() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState(null);
@@ -18,7 +19,7 @@ export default function VendorBookingRequests() {
 
       const data = await response.json();
 
-      if (!response.ok) {
+      if (!response.ok || !data.success) {
         throw new Error(data.message || "Failed to load bookings");
       }
 
@@ -47,11 +48,12 @@ export default function VendorBookingRequests() {
 
       const data = await response.json();
 
-      if (!response.ok) {
+      if (!response.ok || !data.success) {
         throw new Error(data.message || "Failed to update booking");
       }
 
-      toast.success(data.message);
+      toast.success(data.message || "Booking updated successfully");
+
       await fetchBookings();
     } catch (error) {
       toast.error(error.message);
@@ -68,6 +70,7 @@ export default function VendorBookingRequests() {
     <section className="space-y-5">
       <div>
         <h2 className="text-2xl font-bold text-[#513B3B]">Booking Requests</h2>
+
         <p className="text-sm text-gray-500">
           Review and manage your service booking requests.
         </p>
@@ -86,9 +89,12 @@ export default function VendorBookingRequests() {
             >
               <div className="flex gap-4">
                 {booking.serviceImage && (
-                  <img
+                  <Image
                     src={booking.serviceImage}
-                    alt={booking.serviceName}
+                    alt={booking.serviceName || "Service"}
+                    height={100}
+                    width={100}
+                    unoptimized
                     className="h-20 w-20 rounded-xl object-cover"
                   />
                 )}
@@ -105,19 +111,24 @@ export default function VendorBookingRequests() {
                   <p className="text-sm text-gray-500">{booking.userEmail}</p>
 
                   <p className="mt-1 font-semibold text-[#B77C83]">
-                    ৳{Number(booking.price).toLocaleString("en-BD")}
+                    ৳{Number(booking.price || 0).toLocaleString("en-BD")}
                   </p>
                 </div>
               </div>
 
               <div className="mt-4 space-y-2 text-sm text-gray-600">
                 <p>
-                  Event Date: {new Date(booking.eventDate).toLocaleDateString()}
+                  Event Date:{" "}
+                  {booking.eventDate
+                    ? new Date(booking.eventDate).toLocaleDateString()
+                    : "Not specified"}
                 </p>
 
                 <p>
                   Request Date:{" "}
-                  {new Date(booking.createdAt).toLocaleDateString()}
+                  {booking.createdAt
+                    ? new Date(booking.createdAt).toLocaleDateString()
+                    : "N/A"}
                 </p>
               </div>
 
@@ -131,7 +142,7 @@ export default function VendorBookingRequests() {
                         : "bg-yellow-100 text-yellow-700"
                   }`}
                 >
-                  {booking.status.toUpperCase()}
+                  {(booking.status || "pending").toUpperCase()}
                 </span>
               </div>
 
@@ -159,5 +170,25 @@ export default function VendorBookingRequests() {
         </div>
       )}
     </section>
+  );
+}
+
+function BookingFallback() {
+  return (
+    <div className="space-y-5 animate-pulse">
+      <div className="h-8 w-56 rounded bg-gray-200" />
+      <div className="grid gap-5 md:grid-cols-2">
+        <div className="h-56 rounded-2xl bg-gray-100" />
+        <div className="h-56 rounded-2xl bg-gray-100" />
+      </div>
+    </div>
+  );
+}
+
+export default function VendorBookingRequests() {
+  return (
+    <Suspense fallback={<BookingFallback />}>
+      <VendorBookingContent />
+    </Suspense>
   );
 }

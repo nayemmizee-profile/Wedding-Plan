@@ -1,16 +1,21 @@
 import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
-import { NextResponse } from "next/server";
+import { connection, NextResponse } from "next/server";
 
 export async function GET(request) {
+  // IMPORTANT: Keep connection() outside try/catch.
+  await connection();
+
   try {
     const session = await auth.api.getSession({
-      headers: await headers(),
+      headers: request.headers,
     });
 
     if (!session?.user) {
       return NextResponse.json(
-        { success: false, message: "Unauthorized" },
+        {
+          success: false,
+          message: "Unauthorized",
+        },
         { status: 401 },
       );
     }
@@ -27,12 +32,25 @@ export async function GET(request) {
     if (status) query.set("status", status);
     if (plan) query.set("plan", plan);
 
+    const API_URL = process.env.NEXT_PUBLIC_API_URL;
+    const INTERNAL_SECRET = process.env.INTERNAL_API_SECRET;
+
+    if (!API_URL || !INTERNAL_SECRET) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Backend environment variables are missing",
+        },
+        { status: 500 },
+      );
+    }
+
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/admin/transactions?${query.toString()}`,
+      `${API_URL}/admin/transactions?${query.toString()}`,
       {
         method: "GET",
         headers: {
-          "x-internal-secret": process.env.INTERNAL_API_SECRET,
+          "x-internal-secret": INTERNAL_SECRET,
           "x-user-id": session.user.id,
         },
         cache: "no-store",

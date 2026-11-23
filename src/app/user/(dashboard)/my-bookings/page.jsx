@@ -3,9 +3,9 @@
 import { motion } from "framer-motion";
 import { CalendarDays, Loader2, PackageOpen, Search } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 
-export default function MyBookingsPage() {
+function MyBookingsContent() {
   const [bookings, setBookings] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
@@ -111,7 +111,7 @@ export default function MyBookingsPage() {
         </div>
       </div>
 
-      {/* Loading */}
+      {/* Loading / Error / Empty / Booking List */}
       {loading ? (
         <div className="flex justify-center rounded-2xl bg-white py-20">
           <Loader2 size={35} className="animate-spin text-rose-500" />
@@ -121,7 +121,6 @@ export default function MyBookingsPage() {
           <p className="text-red-500">{error}</p>
         </div>
       ) : filteredBookings.length === 0 ? (
-        /* Empty State */
         <div className="rounded-2xl border border-rose-100 bg-white p-10 text-center">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-rose-50 text-rose-500">
             <PackageOpen size={30} />
@@ -140,7 +139,6 @@ export default function MyBookingsPage() {
           </p>
         </div>
       ) : (
-        /* Booking List */
         <div className="grid gap-5">
           {filteredBookings.map((booking) => (
             <div
@@ -154,8 +152,9 @@ export default function MyBookingsPage() {
                     <Image
                       src={booking.serviceImage}
                       alt={booking.serviceName || "Service"}
-                      width={100}
-                      height={100}
+                      width={400}
+                      height={300}
+                      unoptimized
                       className="h-full w-full object-cover"
                     />
                   ) : (
@@ -217,5 +216,25 @@ export default function MyBookingsPage() {
         </div>
       )}
     </motion.section>
+  );
+}
+
+function BookingsSkeleton() {
+  return (
+    <div className="space-y-6 animate-pulse">
+      <div className="h-8 w-56 rounded-lg bg-rose-100" />
+      <div className="h-24 rounded-2xl bg-rose-50" />
+      {[1, 2, 3].map((item) => (
+        <div key={item} className="h-44 rounded-2xl bg-rose-50" />
+      ))}
+    </div>
+  );
+}
+
+export default function MyBookingsPage() {
+  return (
+    <Suspense fallback={<BookingsSkeleton />}>
+      <MyBookingsContent />
+    </Suspense>
   );
 }

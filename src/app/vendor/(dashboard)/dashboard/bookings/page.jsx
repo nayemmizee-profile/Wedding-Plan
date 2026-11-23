@@ -2,9 +2,9 @@
 
 import BookingTable from "@/Components/vendor/BookingTable";
 import { CalendarCheck, Loader2 } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 
-export default function BookingRequestsPage() {
+function BookingRequestsContent() {
   const [bookings, setBookings] = useState([]);
   const [filter, setFilter] = useState("all");
 
@@ -25,6 +25,7 @@ export default function BookingRequestsPage() {
       const response = await fetch(`/api/vendor/bookings?status=${filter}`, {
         cache: "no-store",
       });
+
       const result = await response.json();
 
       if (!response.ok || !result.success) {
@@ -62,8 +63,6 @@ export default function BookingRequestsPage() {
     try {
       setProcessingId(id);
 
-      const action = status === "accepted" ? "accept" : "reject";
-
       const response = await fetch(`/api/vendor/bookings/${id}/${action}`, {
         method: "PATCH",
         headers: {
@@ -77,7 +76,6 @@ export default function BookingRequestsPage() {
         throw new Error(result.message || "Failed to update booking");
       }
 
-      // Refresh bookings and counts
       await fetchBookings();
     } catch (error) {
       console.error("Booking Action Error:", error);
@@ -149,5 +147,24 @@ export default function BookingRequestsPage() {
         />
       )}
     </div>
+  );
+}
+
+function BookingRequestsSkeleton() {
+  return (
+    <div className="mx-auto max-w-7xl space-y-6 animate-pulse">
+      <div className="h-8 w-64 rounded-lg bg-gray-200" />
+      <div className="h-24 rounded-2xl bg-gray-100" />
+      <div className="h-10 w-80 rounded-xl bg-gray-100" />
+      <div className="h-64 rounded-2xl bg-gray-100" />
+    </div>
+  );
+}
+
+export default function BookingRequestsPage() {
+  return (
+    <Suspense fallback={<BookingRequestsSkeleton />}>
+      <BookingRequestsContent />
+    </Suspense>
   );
 }

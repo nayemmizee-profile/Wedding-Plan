@@ -18,6 +18,7 @@ import {
   Sparkles,
   XCircle,
 } from "lucide-react";
+import Image from "next/image";
 
 const statsConfig = [
   {
@@ -416,9 +417,11 @@ export default function UserDashboardPage() {
                     <td className="px-6 py-5">
                       <div className="flex items-center gap-3">
                         {booking.serviceImage ? (
-                          <img
+                          <Image
                             src={booking.serviceImage}
                             alt={booking.serviceName}
+                            height={100}
+                            width={100}
                             className="h-12 w-12 rounded-xl object-cover"
                           />
                         ) : (

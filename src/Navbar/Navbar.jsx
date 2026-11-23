@@ -13,7 +13,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 
 // Guest Navigation
 const guestLinks = [
@@ -50,7 +50,8 @@ const adminLinks = [
   { name: "Users", href: "/admin/users" },
 ];
 
-export default function Navbar() {
+// Main Navbar Component
+function NavbarContent() {
   const [isOpen, setIsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
 
@@ -152,8 +153,6 @@ export default function Navbar() {
     );
   }
 
-  // তোমার আগের সম্পূর্ণ return অংশ এখানে থাকবে
-
   return (
     <header className="sticky top-0 z-50 w-full border-b border-rose-100 bg-white/95 shadow-sm backdrop-blur-md">
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8">
@@ -236,6 +235,7 @@ export default function Navbar() {
                   <p className="text-sm font-semibold text-gray-800">
                     {currentUser.name || "My Account"}
                   </p>
+
                   <p className="text-xs capitalize text-gray-500">
                     {accountType}
                   </p>
@@ -319,6 +319,7 @@ export default function Navbar() {
                 <p className="font-semibold text-gray-800">
                   {currentUser.name || "My Account"}
                 </p>
+
                 <p className="text-xs capitalize text-rose-600">
                   {accountType}
                 </p>
@@ -347,7 +348,7 @@ export default function Navbar() {
             {!currentUser ? (
               <>
                 <Link
-                  href="/logIn"
+                  href="/login"
                   onClick={closeMenu}
                   className="rounded-full border border-rose-200 px-5 py-3 text-center text-sm font-semibold text-rose-600 transition hover:bg-rose-50"
                 >
@@ -355,7 +356,7 @@ export default function Navbar() {
                 </Link>
 
                 <Link
-                  href="/Register"
+                  href="/register"
                   onClick={closeMenu}
                   className="rounded-full bg-rose-600 px-5 py-3 text-center text-sm font-semibold text-white transition hover:bg-rose-700"
                 >
@@ -365,7 +366,9 @@ export default function Navbar() {
             ) : (
               <>
                 <Link
-                  href="/profile"
+                  href={
+                    accountType === "vendor" ? "/vendor/dashboard" : "/profile"
+                  }
                   onClick={closeMenu}
                   className="flex items-center justify-center gap-2 rounded-full border border-rose-200 px-5 py-3 text-sm font-semibold text-rose-600 transition hover:bg-rose-50"
                 >
@@ -386,5 +389,18 @@ export default function Navbar() {
         </div>
       </div>
     </header>
+  );
+}
+
+// Navbar with Suspense Boundary
+export default function Navbar() {
+  return (
+    <Suspense
+      fallback={
+        <header className="sticky top-0 z-50 h-[73px] border-b border-rose-100 bg-white/95" />
+      }
+    >
+      <NavbarContent />
+    </Suspense>
   );
 }

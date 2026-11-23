@@ -1,12 +1,17 @@
 import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
-import { NextResponse } from "next/server";
+import { connection, NextResponse } from "next/server";
 
 export async function GET(request) {
+  // IMPORTANT: Keep this outside try-catch
+  await connection();
+
+  // Access request headers outside try-catch
+  const requestHeaders = request.headers;
+
   try {
     // Get logged-in session
     const session = await auth.api.getSession({
-      headers: await headers(),
+      headers: requestHeaders,
     });
 
     const user = session?.user;
@@ -20,7 +25,10 @@ export async function GET(request) {
 
     if (user.role !== "vendor") {
       return NextResponse.json(
-        { success: false, message: "Only vendors can access bookings" },
+        {
+          success: false,
+          message: "Only vendors can access bookings",
+        },
         { status: 403 },
       );
     }

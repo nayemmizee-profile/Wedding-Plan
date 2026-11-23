@@ -18,9 +18,9 @@ export default function AuthRedirectPage() {
       return;
     }
 
-    const role = session.user.role;
+    const accountType = session.user.accountType;
 
-    if (role === "vendor") {
+    if (accountType === "vendor") {
       router.replace("/vendor/dashboard");
     } else {
       router.replace("/user/dashboard");
