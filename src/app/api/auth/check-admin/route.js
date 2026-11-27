@@ -2,13 +2,9 @@ import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
 export async function GET(request) {
-  // IMPORTANT: Access request headers outside try-catch
-  const requestHeaders = request.headers;
-
   try {
-    // 1. Verify logged-in user
     const session = await auth.api.getSession({
-      headers: requestHeaders,
+      headers: request.headers,
     });
 
     if (!session?.user) {
@@ -21,16 +17,14 @@ export async function GET(request) {
       );
     }
 
-    // 2. Get Admin IDs from server environment
     const adminIds = (process.env.ADMIN_USER_IDS || "")
       .split(",")
       .map((id) => id.trim())
       .filter(Boolean);
 
-    // 3. Check current user's ID
-    const isAdmin = adminIds.includes(session.user.id);
+    const isAdmin =
+      session.user.role === "admin" || adminIds.includes(session.user.id);
 
-    // 4. Return admin verification result
     return NextResponse.json({
       success: true,
       isAdmin,

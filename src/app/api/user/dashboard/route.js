@@ -21,7 +21,7 @@ export async function GET(request) {
       );
     }
 
-    if (session.user.role !== "user") {
+    if (session.user.accountType !== "user") {
       return NextResponse.json(
         {
           success: false,
@@ -48,7 +48,7 @@ export async function GET(request) {
         "x-internal-secret": process.env.INTERNAL_API_SECRET,
         "x-user-id": session.user.id,
         "x-user-email": session.user.email,
-        "x-user-role": session.user.role,
+        "x-user-account-type": session.user.accountType,
       },
       cache: "no-store",
     });

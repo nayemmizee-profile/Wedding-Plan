@@ -23,7 +23,7 @@ import { authClient } from "@/lib/auth-client";
 export default function RegisterPage() {
   const router = useRouter();
 
-  const [role, setRole] = useState("user");
+  const [accountType, setAccountType] = useState("user");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -88,14 +88,26 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
+      // Determine dashboard based on selected role
+      const dashboard =
+        accountType === "admin"
+          ? "/admin"
+          : accountType === "vendor"
+            ? "/vendor/dashboard"
+            : "/user/dashboard";
+
+      router.replace(dashboard);
+      router.refresh();
+
       const { data, error: authError } = await authClient.signUp.email({
         name: form.name.trim(),
         email: form.email.trim(),
         password: form.password,
         image: form.image.trim() || undefined,
-        accountType: role,
-        callbackURL: "/login",
+        accountType,
+        callbackURL: dashboard,
       });
+
       if (authError) {
         setError(authError.message || "Registration failed. Please try again.");
         return;
@@ -103,11 +115,11 @@ export default function RegisterPage() {
 
       console.log("Registration successful:", data);
 
-      setSuccess("Account created successfully! Redirecting to login...");
+      setSuccess("Account created successfully! Redirecting to dashboard...");
 
-      setTimeout(() => {
-        router.push("/login");
-      }, 1500);
+      // Redirect to the selected dashboard
+      router.replace(dashboard);
+      router.refresh();
     } catch (err) {
       console.error("Registration error:", err);
       setError("Something went wrong. Please try again.");
@@ -161,9 +173,9 @@ export default function RegisterPage() {
           <div className="grid grid-cols-2 gap-3">
             <button
               type="button"
-              onClick={() => setRole("user")}
+              onClick={() => setAccountType("user")}
               className={`flex items-center justify-center gap-2 rounded-xl border p-3 text-sm font-semibold transition ${
-                role === "user"
+                accountType === "user"
                   ? "border-[#c45c75] bg-rose-50 text-[#b64f68]"
                   : "border-gray-200 text-gray-500 hover:border-rose-200"
               }`}
@@ -174,9 +186,9 @@ export default function RegisterPage() {
 
             <button
               type="button"
-              onClick={() => setRole("vendor")}
+              onClick={() => setAccountType("vendor")}
               className={`flex items-center justify-center gap-2 rounded-xl border p-3 text-sm font-semibold transition ${
-                role === "vendor"
+                accountType === "vendor"
                   ? "border-[#c45c75] bg-rose-50 text-[#b64f68]"
                   : "border-gray-200 text-gray-500 hover:border-rose-200"
               }`}

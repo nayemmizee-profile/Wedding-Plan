@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
+// POST: Add New Service
 export async function POST(request) {
   try {
     // 1. Verify Better Auth session
@@ -19,8 +20,8 @@ export async function POST(request) {
       );
     }
 
-    // 2. Verify vendor role
-    if (session.user.role !== "vendor") {
+    // 2. Verify vendor accountType
+    if (session.user.accountType !== "vendor") {
       return NextResponse.json(
         {
           success: false,
@@ -55,7 +56,7 @@ export async function POST(request) {
   } catch (error) {
     console.error("ADD SERVICE API ERROR:", error);
 
-    return Response.json(
+    return NextResponse.json(
       {
         success: false,
         message: error.message || "Failed to submit service",
@@ -65,10 +66,11 @@ export async function POST(request) {
     );
   }
 }
-//**Get method ============================================> */
 
+// GET: Get Vendor Services
 export async function GET() {
   try {
+    // 1. Verify Better Auth session
     const session = await auth.api.getSession({
       headers: await headers(),
     });
@@ -77,15 +79,19 @@ export async function GET() {
 
     if (!session?.user) {
       return NextResponse.json(
-        { success: false, message: "Please login first" },
+        {
+          success: false,
+          message: "Please login first",
+        },
         { status: 401 },
       );
     }
 
     console.log("User ID:", session.user.id);
-    console.log("User Role:", session.user.role);
+    console.log("Account Type:", session.user.accountType);
 
-    if (session.user.role !== "vendor") {
+    // 2. Verify vendor accountType
+    if (session.user.accountType !== "vendor") {
       return NextResponse.json(
         {
           success: false,
@@ -97,6 +103,7 @@ export async function GET() {
 
     console.log("Backend URL:", process.env.NEXT_PUBLIC_API_URL);
 
+    // 3. Request Express backend
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/vendor/services`,
       {

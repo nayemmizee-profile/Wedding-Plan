@@ -32,7 +32,7 @@ export async function POST() {
     // STEP 2: Verify Vendor Role
     stage = "ROLE_VERIFICATION";
 
-    if (session.user.role !== "vendor") {
+    if (session.user.accountType !== "vendor") {
       return NextResponse.json(
         {
           success: false,

@@ -1,15 +1,12 @@
 import { auth } from "@/lib/auth";
-import { connection, NextResponse } from "next/server";
+import { headers } from "next/headers";
+import { NextResponse } from "next/server";
 
 export async function GET(request) {
-  // IMPORTANT: Keep this outside try-catch
-  await connection();
-
-  // Access request headers outside try-catch
-  const requestHeaders = request.headers;
-
   try {
-    // Get logged-in session
+    // Get authenticated session
+    const requestHeaders = await headers();
+
     const session = await auth.api.getSession({
       headers: requestHeaders,
     });
@@ -23,29 +20,31 @@ export async function GET(request) {
       );
     }
 
-    if (user.role !== "vendor") {
+    // Support the account type field used by your user records
+    const accountType = user.accountType || user.role;
+
+    if (accountType !== "vendor") {
       return NextResponse.json(
         {
           success: false,
           message: "Only vendors can access bookings",
+          accountType,
         },
         { status: 403 },
       );
     }
 
-    // Get status from frontend URL
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status") || "all";
 
-    // Send request to Express backend
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/vendor/bookings?status=${encodeURIComponent(status)}`,
+      `${process.env.API_URL}/vendor/bookings?status=${encodeURIComponent(status)}`,
       {
         method: "GET",
         headers: {
           "x-internal-secret": process.env.INTERNAL_API_SECRET,
-          "x-user-id": user.id,
-          "x-user-role": user.role,
+          "x-user-id": String(user.id),
+          "x-user-account-type": "vendor",
         },
         cache: "no-store",
       },

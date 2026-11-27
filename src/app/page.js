@@ -1,3 +1,4 @@
+import Footer from "@/Footer/footer";
 import Hero from "@/Hero/Hero";
 import WeddingJourney from "@/Home3rdsection/3rdSEction";
 import WeddingGallery from "@/Home3rdsection/4thSection";
@@ -16,6 +17,7 @@ export default function Home() {
       <WeddingGallery />
       <LoveStories />
       <WeddingInspiration />
+      <Footer />
     </>
   );
 }

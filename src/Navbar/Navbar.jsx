@@ -18,8 +18,8 @@ import { Suspense, useEffect, useState } from "react";
 // Guest Navigation
 const guestLinks = [
   { name: "Home", href: "/" },
-  { name: "Services", href: "/services" },
-  { name: "Find Vendors", href: "/vendors" },
+
+  { name: "Find Vendors", href: "/all-services" },
   { name: "About Us", href: "/about" },
   { name: "Contact", href: "/contact" },
 ];
@@ -35,8 +35,8 @@ const userLinks = [
 // Vendor Navigation
 const vendorLinks = [
   { name: "Home", href: "/" },
-  { name: "Dashboard", href: "/vendor/dashboard" },
-  { name: "My Services", href: "/vendor/dashboard/services" },
+  // { name: "Dashboard", href: "/vendor/dashboard" },
+  { name: "Dashboard", href: "/vendor/dashboard/services" },
   { name: "Booking Requests", href: "/vendor/dashboard/bookings" },
   { name: "Reviews", href: "/vendor/dashboard/reviews" },
 ];
@@ -64,8 +64,6 @@ function NavbarContent() {
 
   const pathname = usePathname();
   const router = useRouter();
-
-  const accountType = currentUser?.accountType?.toLowerCase();
 
   // Verify Admin
   useEffect(() => {
@@ -112,17 +110,21 @@ function NavbarContent() {
   }, [currentUser?.id]);
 
   // Select Navigation
+  const accountType = (
+    currentUser?.accountType ||
+    currentUser?.role ||
+    ""
+  ).toLowerCase();
+
   const navLinks = !currentUser
     ? guestLinks
-    : adminCheckPending
-      ? []
-      : isAdmin
-        ? adminLinks
-        : accountType === "vendor"
-          ? vendorLinks
-          : accountType === "user"
-            ? userLinks
-            : guestLinks;
+    : isAdmin
+      ? adminLinks
+      : accountType === "vendor"
+        ? vendorLinks
+        : accountType === "user"
+          ? userLinks
+          : guestLinks;
 
   // Check Active Route
   const isActive = (href) => pathname === href;
@@ -147,7 +149,7 @@ function NavbarContent() {
     setIsOpen(false);
   };
 
-  if (isPending || (currentUser && adminCheckPending)) {
+  if (isPending) {
     return (
       <header className="sticky top-0 z-50 h-[73px] border-b border-rose-100 bg-white/95" />
     );

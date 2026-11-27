@@ -1,12 +1,10 @@
 import { auth } from "@/lib/auth";
-import { connection, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 export async function GET(request) {
-  // Must stay outside try-catch
-  await connection();
-
   try {
-    // Get logged-in session
+    // 1. Get logged-in session
+
     const session = await auth.api.getSession({
       headers: request.headers,
     });
@@ -15,12 +13,16 @@ export async function GET(request) {
 
     if (!user) {
       return NextResponse.json(
-        { success: false, message: "Unauthorized" },
+        {
+          success: false,
+          message: "Unauthorized",
+        },
         { status: 401 },
       );
     }
 
-    if (user.role !== "vendor") {
+    // 2. Verify vendor accountType
+    if (user.accountType !== "vendor") {
       return NextResponse.json(
         {
           success: false,
@@ -30,7 +32,7 @@ export async function GET(request) {
       );
     }
 
-    // Request Express backend
+    // 3. Request Express backend
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/vendor/bookings`,
       {
@@ -38,7 +40,8 @@ export async function GET(request) {
         headers: {
           "x-internal-secret": process.env.INTERNAL_API_SECRET,
           "x-user-id": user.id,
-          "x-user-role": user.role,
+          "x-user-email": user.email,
+          "x-user-account-type": user.accountType,
         },
         cache: "no-store",
       },
@@ -55,7 +58,7 @@ export async function GET(request) {
     return NextResponse.json(
       {
         success: false,
-        message: "Internal server error",
+        message: error.message || "Internal server error",
       },
       { status: 500 },
     );

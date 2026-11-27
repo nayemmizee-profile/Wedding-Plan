@@ -39,12 +39,14 @@ export default function LoginPage() {
 
   const redirectByRole = (accountType) => {
     if (accountType === "vendor") {
-      router.replace("/vendor/dashboard");
+      router.replace("/vendor/dashboard/services");
+      router.refresh();
       return;
     }
 
     if (accountType === "user") {
       router.replace("/user/dashboard");
+      router.refresh();
       return;
     }
 

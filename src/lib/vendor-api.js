@@ -4,7 +4,9 @@ import { NextResponse } from "next/server";
 
 export async function vendorRequest(path, options = {}) {
   try {
-    // 1. Verify Better Auth Session
+    // 1. Ensure MongoDB connection
+
+    // 2. Verify Better Auth Session
     const session = await auth.api.getSession({
       headers: await headers(),
     });
@@ -19,7 +21,7 @@ export async function vendorRequest(path, options = {}) {
       );
     }
 
-    // 2. Verify Vendor Role
+    // 3. Verify Vendor Role
     if (session.user.accountType !== "vendor") {
       return NextResponse.json(
         {
@@ -30,23 +32,23 @@ export async function vendorRequest(path, options = {}) {
       );
     }
 
-    // 3. Prepare Headers
+    // 4. Prepare Headers
+    // Prepare Headers
     const requestHeaders = new Headers(options.headers);
 
     requestHeaders.set("x-user-id", session.user.id);
-
     requestHeaders.set("x-user-email", session.user.email);
-
+    requestHeaders.set("x-user-account-type", session.user.accountType);
     requestHeaders.set("x-internal-secret", process.env.INTERNAL_API_SECRET);
 
-    // 4. Set Content-Type only for JSON
+    // 5. Set Content-Type only for JSON
     const isFormData = options.body instanceof FormData;
 
     if (!isFormData && !requestHeaders.has("Content-Type")) {
       requestHeaders.set("Content-Type", "application/json");
     }
 
-    // 5. Send Request to Express Backend
+    // 6. Send Request to Express Backend
     const response = await fetch(`${process.env.API_URL}${path}`, {
       ...options,
       headers: requestHeaders,

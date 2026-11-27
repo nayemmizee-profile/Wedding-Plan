@@ -7,11 +7,9 @@ import {
   CalendarCheck,
   Crown,
   Gem,
-  LayoutDashboard,
   LogOut,
   Menu,
   PlusCircle,
-  Settings,
   X,
 } from "lucide-react";
 import Link from "next/link";
@@ -19,13 +17,13 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 const menuItems = [
+  // {
+  //   name: "Overview",
+  //   href: "/vendor/dashboard",
+  //   icon: LayoutDashboard,
+  // },
   {
     name: "Overview",
-    href: "/vendor/dashboard",
-    icon: LayoutDashboard,
-  },
-  {
-    name: "My Services",
     href: "/vendor/dashboard/services",
     icon: BriefcaseBusiness,
   },
@@ -43,11 +41,6 @@ const menuItems = [
     name: "Subscription",
     href: "/vendor/dashboard/subscription",
     icon: Crown,
-  },
-  {
-    name: "Profile Settings",
-    href: "/vendor/dashboard/profile",
-    icon: Settings,
   },
 ];
 

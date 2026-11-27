@@ -14,7 +14,8 @@ async function VendorLayoutContent({ children }) {
     redirect("/login");
   }
 
-  if (session.user.role !== "vendor") {
+  // Vendor check must use accountType, not role
+  if (session.user.accountType !== "vendor") {
     redirect("/user/dashboard");
   }
 
